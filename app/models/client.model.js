@@ -8,7 +8,7 @@ import Address from './address.model';
 const ClientSchema = new mongoose.Schema({
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
-	userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+	artistId: { type: mongoose.Schema.Types.ObjectId, required: true },
 	artwork: [{
 		artworkId: { type: mongoose.Schema.Types.ObjectId, required: true},
 		name: { type: String, required: true },
@@ -18,7 +18,7 @@ const ClientSchema = new mongoose.Schema({
     addresses: { type: [Address.schema] },
 });
 
-// ClientSchema.index({ })
+ClientSchema.index({ artistId: 1 });
 
 ClientSchema.statics = {
     get(id) {

@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+    - "node"
+services:
+    - mongodb
+cache:
+    directories:
+        - node_modules
+git:
+    depth: 3
+script:
+    - npm run ci
+before_script:
+    - sleep 15
+    - mongo development-api-TEST --eval 'db.createUser({user:"developmentUser", pwd:"SIMPLE_P4SSWORD", roles:[{ role:"readWrite", db:"development-api" },{ role:"readWrite", db:"development-api-TEST"}]});'

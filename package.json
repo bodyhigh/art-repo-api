@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --timeout 50000 --ui bdd --reporter spec --colors --require babel-core/register tests --recursive",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
     "start": "npm run build && node dist/server.js"
   },
@@ -19,11 +19,14 @@
   },
   "homepage": "https://github.com/bodyhigh/art-repo-api#readme",
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/register": "^7.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chai-as-promised": "^7.1.1",
+    "cross-env": "^5.2.0",
     "eslint": "^5.5.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
@@ -34,6 +37,7 @@
     "bcrypt": "^3.0.0",
     "bluebird": "^3.5.2",
     "body-parser": "^1.18.3",
+    "chai": "^4.1.2",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",

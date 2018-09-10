@@ -19,7 +19,6 @@ mongoose.connection.on('error', () => {
     throw new Error(`Unable to connect to database: ${mongoUri}`);
 });
 
-
 // START LISTENING
 if (!module.parent) {
     app.listen(config.port, () => {
