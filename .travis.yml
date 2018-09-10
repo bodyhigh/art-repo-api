@@ -10,4 +10,4 @@ git:
     depth: 3
 before_script:
     - sleep 15
-    - mongo development-api-TEST --eval 'db.createUser({user:"developmentUser", pwd:"SIMPLE_P4SSWORD", roles:[{ role:"readWrite", db:"development-api" },{ role:"readWrite", db:"development-api-TEST"}]});'4SSWORD", roles:[{ role:"readWrite", db:"development-api" },{ role:"readWrite", db:"development-api-TEST"}]});'
+    - mongo development-api-TEST --eval 'db.createUser({user:"developmentUser", pwd:"SIMPLE_P4SSWORD", roles:[{ role:"readWrite", db:"development-api" },{ role:"readWrite", db:"development-api-TEST"}]});'
