@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 import Client from '../../app/models/client.model';
+import { sampleBasicClient, 
+    sampleClientAddress, 
+    sampleClientArtwork, 
+    sampleFullClient } from '../sample-data/client.sample';
 import util from 'util';
-// import Client from '../../app/models/client.model';
 import chai, { expect } from 'chai';
 // import chaiAsPromised from 'chai-as-promised';
 // chai.use(chaiAsPromised);
@@ -9,68 +12,14 @@ import chai, { expect } from 'chai';
 chai.config.includeStack = true;
 
 describe('## MODEL/CLIENT ##', () => {
-    const seedBasicClient = {
-        firstName: 'Bob',
-        lastName: 'Dobbs',
-        artistId: mongoose.Types.ObjectId()
-    };
+    const seedBasicClient = sampleBasicClient;
+    const seedClientAddress = sampleClientAddress;
+    const seedClientArtwork = sampleClientArtwork;
+    const seedFullClient = sampleFullClient;
     
-    const seedClientAddress = {
-        addresses: [
-            {
-                address1: '1313 Mockingbird Ln.',
-                city: 'San Diego',
-                stateProvince: 'CA',
-                postalCode: '92105',
-                country: 'US',
-                addressType: 'Home'
-            },
-            {
-                address1: '42 Business Blvd.',
-                address: 'STE. 23',
-                city: 'San Diego',
-                stateProvince: 'CA',
-                postalCode: '92101',
-                country: 'US',
-                addressType: 'Business'
-            }
-        ]
-    };
-
-    const seedClientArtwork = {
-        artwork: [
-            {
-                artworkId: mongoose.Types.ObjectId(),
-                name: 'Art 1',
-                description: 'This is a description for Art 1.',
-                photoUrl: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png'
-            },
-            {
-                artworkId: mongoose.Types.ObjectId(),
-                name: 'Art 2',
-                description: 'This is a description for Art 2.',
-                photoUrl: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png'
-            },
-            {
-                artworkId: mongoose.Types.ObjectId(),
-                name: 'Art 3',
-                description: 'This is a description for Art 3.',
-                photoUrl: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png'
-            },
-            {
-                artworkId: mongoose.Types.ObjectId(),
-                name: 'Art 4',
-                description: 'This is a description for Art 4.',
-                photoUrl: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png'
-            }
-        ]
-    };
-
-    const seedFullClient = {...seedBasicClient, ...seedClientAddress, ...seedClientArtwork};
-
-    // beforeEach((done) => {
-    //     Client.remove({}, done);
-    // });
+    beforeEach((done) => {
+        Client.remove({}, done);
+    });
 
     describe('Validation Tests', () => {
         it('Should fail when missing basic information', (done) => {
@@ -124,12 +73,13 @@ describe('## MODEL/CLIENT ##', () => {
     })
 
     it('Should successfully save Client', (done) => {
-        // console.log(seedFullClient);
         const newClient = new Client(seedFullClient);
         
         newClient.save()
             .then(savedClient => {
-                // console.log(savedClient);
+                // console.log('---------------------------------------------');                
+                // console.log(util.inspect(savedClient, {colors: true }));
+                // console.log('---------------------------------------------');
                 expect(savedClient.firstName).to.be.equal(seedFullClient.firstName);
                 expect(savedClient.lastName).to.be.equal(seedFullClient.lastName);
                 done();
