@@ -10,7 +10,8 @@ const UserSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    roles: { type: [String], required: true },
+    // roles: { type: [String], required: true },
+    roles: [{ type: String, required: true }],
     clients: [{
         clientId: { type: mongoose.Schema.Types.ObjectId, required: true},
         firstName: { type: String, required: true },
@@ -26,6 +27,17 @@ const UserSchema = new mongoose.Schema({
     accountStatus: { type: String, required: true },
     createDate: { type: Date, default: Date.now },
 });
+
+// Validation
+UserSchema.path('roles').validate((roles) => {
+    if (!roles) {
+        return false;
+    } else if (roles.length < 1) {
+        return false;
+    }
+
+    return true;
+}, 'required');
 
 UserSchema.statics = {
     get(id) {

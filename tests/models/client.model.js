@@ -13,12 +13,13 @@ chai.config.includeStack = true;
 
 describe('## MODEL/CLIENT ##', () => {
     const seedBasicClient = sampleBasicClient;
-    const seedClientAddress = sampleClientAddress;
-    const seedClientArtwork = sampleClientArtwork;
+    // const seedClientAddress = sampleClientAddress;
+    // const seedClientArtwork = sampleClientArtwork;
     const seedFullClient = sampleFullClient;
     
     beforeEach((done) => {
-        Client.remove({}, done);
+        // Client.remove({}, done);
+        Client.deleteMany({}, done);
     });
 
     describe('Validation Tests', () => {
