@@ -12,12 +12,13 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     roles: [{ type: String, required: true }],
-    clients: { type: [ClientBasicRef.Schema] },
+    // roles: { type: [String], required: true, enum: ['admin', 'user']},
+    clients: { type: [ClientBasicRef.schema] },
     clientRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }],
-    artwork: { type: [ArtworkBasicRef.Schema] },
+    artwork: { type: [ArtworkBasicRef.schema] },
     // artworkRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artwork' }],
     addresses: { type: [Address.schema] },
-    accountStatus: { type: String, required: true },
+    accountStatus: { type: String, required: true, enum: ['active', 'disabled'] },
     createDate: { type: Date, default: Date.now },
 });
 

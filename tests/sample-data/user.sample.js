@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import { sampleAddresses } from './address.sample';
 import { sampleArtworkCoveredRef } from './artwork.sample';
-import sampleClientBasicRef from './client.sample';
+import { sampleClientBasicRefs, sampleFullClient } from './client.sample';
 
-export const sampleUserBasic = {
+export const sampleBasicUser = {
     firstName: 'Trajan',
     lastName: 'Dobbs',
     email: 'donotreply@fakemail.com',
@@ -12,4 +12,6 @@ export const sampleUserBasic = {
     accountStatus: 'active'
 };
 
-export const sampleFullUser = {...sampleUserBasic, ...sampleClientBasicRef };
+// const sampleClientRefs = { clientRefs: [sampleFullClient, sampleFullClient]};
+
+export const sampleFullUser = {...sampleBasicUser, ...sampleAddresses, ...sampleArtworkCoveredRef, ...sampleClientBasicRefs };

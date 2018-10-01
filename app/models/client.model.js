@@ -10,13 +10,8 @@ const ClientSchema = new mongoose.Schema({
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
 	artistId: { type: mongoose.Schema.Types.ObjectId, required: true },
-	// artwork: [{
-	// 	artworkId: { type: mongoose.Schema.Types.ObjectId, required: true},
-	// 	name: { type: String, required: true },
-	// 	description: { type: String, required: true },
-	// 	photoUrl: { type: String },
-    // }],
-    artwork: { type: [ArtworkBasicRef.Schema] },
+    artwork: { type: [ArtworkBasicRef.schema] },
+    // artworkRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artwork' }],
     addresses: { type: [Address.schema] },
 });
 

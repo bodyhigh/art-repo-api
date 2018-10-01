@@ -8,6 +8,21 @@ export const sampleBasicClient = {
     artistId: mongoose.Types.ObjectId()
 };
 
+export const sampleClientBasicRefs = {
+    clients: [
+        {
+            firstName: 'Horatio',
+            lastName: 'Dobbs',
+            clientId: mongoose.Types.ObjectId()
+        },
+        {
+            firstName: 'Tango',
+            lastName: 'Dobbs',
+            clientId: mongoose.Types.ObjectId()
+        }
+    ]
+};
+
 export const sampleClientBasicRef = {
     clientId: mongoose.Types.ObjectId(),
     firstName: 'Horatio',
