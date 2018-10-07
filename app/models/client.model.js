@@ -1,17 +1,15 @@
 /* eslint-disable func-names */
-// import Promise from 'bluebird';
 import mongoose from 'mongoose';
 import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
 import Address from './address.model';
-import { ArtworkBasicRef } from './artworkRefs.model';
+import ArtworkBasicRef from './artworkRefs.model';
 
 const ClientSchema = new mongoose.Schema({
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
 	artistId: { type: mongoose.Schema.Types.ObjectId, required: true },
     artwork: { type: [ArtworkBasicRef.schema] },
-    // artworkRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artwork' }],
     addresses: { type: [Address.schema] },
 });
 

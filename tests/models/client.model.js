@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Client from '../../app/models/client.model';
+import ArtworkBasicRef from '../../app/models/artworkRefs.model';
 import { sampleBasicClient, 
     sampleClientAddress, 
     sampleClientArtwork, 
@@ -8,7 +9,7 @@ import util from 'util';
 import chai, { expect } from 'chai';
 // import chaiAsPromised from 'chai-as-promised';
 // chai.use(chaiAsPromised);
-import { ArtworkBasicRef } from '../../app/models/artworkRefs.model';
+
 
 chai.config.includeStack = true;
 

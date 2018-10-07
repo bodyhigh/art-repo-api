@@ -3,20 +3,19 @@ import mongoose from 'mongoose';
 import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
 import Address from './address.model';
-import { ClientBasicRef } from './clientRefs.model';
-import { ArtworkBasicRef } from './artworkRefs.model';
+import ClientBasicRef from './clientRefs.model';
+import ArtworkBasicRef  from './artworkRefs.model';
 
 const UserSchema = new mongoose.Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    roles: [{ type: String, required: true }],
+    roles: [{ type: String, required: true, enum: ['admin', 'user'] }],
     // roles: { type: [String], required: true, enum: ['admin', 'user']},
     clients: { type: [ClientBasicRef.schema] },
     clientRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }],
     artwork: { type: [ArtworkBasicRef.schema] },
-    // artworkRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Artwork' }],
     addresses: { type: [Address.schema] },
     accountStatus: { type: String, required: true, enum: ['active', 'disabled'] },
     createDate: { type: Date, default: Date.now },

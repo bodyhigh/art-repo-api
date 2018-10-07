@@ -87,8 +87,18 @@ describe('## MODEL/USER ##', () => {
                 // # of errors
                 expect(Object.keys(err.errors).length).to.be.equal(3);
                 done();
+            });            
+        });
+
+        it('[roles] - Should fail validation of a invalid role exists', (done) => {
+            const newUser = new User({...sampleBasicUser, ...sampleArtworkCoveredRef});
+            newUser.roles = ['admin', 'boogeyman'];
+
+            newUser.validate((err) => {
+                // console.log(util.inspect(err.errors, {colors: true }));
+                expect(err.errors['roles.1'].kind).to.be.equal('enum');
+                done();
             });
-            
         });
 
         it('[artwork] - Should pass when provided a valid records', (done) => {

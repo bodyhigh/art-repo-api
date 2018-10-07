@@ -8,7 +8,7 @@ export const sampleBasicUser = {
     lastName: 'Dobbs',
     email: 'donotreply@fakemail.com',
     password: 'not a real password',
-    roles: ['admin'],
+    roles: ['admin', 'user'],
     accountStatus: 'active'
 };
 

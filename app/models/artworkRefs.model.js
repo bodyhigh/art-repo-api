@@ -7,4 +7,4 @@ const artworkBasicRefSchema = new mongoose.Schema({
     photoUrl: { type: String },
 });
 
-export const ArtworkBasicRef = mongoose.model('ArtworkBasicRef', artworkBasicRefSchema);
+export default mongoose.model('ArtworkBasicRef', artworkBasicRefSchema);

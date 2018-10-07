@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-// import Client from './client.model';
 
 const ClientBasicRefSchema = new mongoose.Schema({
     clientId: { type: mongoose.Schema.Types.ObjectId, required: true},
@@ -7,4 +6,4 @@ const ClientBasicRefSchema = new mongoose.Schema({
     lastName: { type: String, required: true }
 });
 
-export const ClientBasicRef = mongoose.model('ClientBasicRef', ClientBasicRefSchema);
+export default mongoose.model('ClientBasicRef', ClientBasicRefSchema);
