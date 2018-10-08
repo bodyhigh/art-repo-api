@@ -7,22 +7,36 @@ import { sampleBasicClient,
     sampleFullClient } from '../sample-data/client.sample';
 import util from 'util';
 import chai, { expect } from 'chai';
-// import chaiAsPromised from 'chai-as-promised';
-// chai.use(chaiAsPromised);
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
 
 
 chai.config.includeStack = true;
 
-describe('## MODEL/CLIENT ##', () => {
-    const seedBasicClient = sampleBasicClient;
-    const seedFullClient = sampleFullClient;
+describe('## MODEL/CLIENT ##', function()  {
+    var seedFullClient;
+
+    before(function(done) {
+        const newClients = [new Client(sampleFullClient), new Client(sampleFullClient), new Client(sampleFullClient)];
+        Client.create(newClients)
+            .then((results) => {
+                // console.log(util.inspect(results, {colors: true }));
+                seedFullClient = results[0];
+                done();
+            })
+            .catch(done);
+    });
     
-    beforeEach((done) => {
-        Client.deleteMany({}, done);
+    // beforeEach(function(done)  {
+    //     Client.deleteMany({}, done);
+    // });
+
+    after(function()  {
+        return Client.deleteMany({});
     });
 
-    describe('Field Validation', () => {
-        it('Should fail when missing basic information', (done) => {
+    describe('Field Validation', function()  {
+        it('Should fail when missing basic information', function(done)  {
             const newClient = new Client();
 
             newClient.validate((err) => {
@@ -33,9 +47,9 @@ describe('## MODEL/CLIENT ##', () => {
             });
         });
 
-        it('[addresses] - Should fail address validation when missing required fields', (done) => {
+        it('[addresses] - Should fail address validation when missing required fields', function(done)  {
             const incompleteAddress = { addresses: [{ fakeField: 'Foo1' }, { fakeField: 'Foo2' }]};
-            const testClient = {...seedBasicClient, ...incompleteAddress};
+            const testClient = {...sampleBasicClient, ...incompleteAddress};
             const newClient = new Client(testClient);
 
             newClient.validate((err) => {
@@ -54,14 +68,14 @@ describe('## MODEL/CLIENT ##', () => {
             });
         });
 
-        it('[addresses] - Should pass address validation when provided valid record', (done) =>{
-            const newClient = new Client({...seedBasicClient, ...sampleClientAddress});
+        it('[addresses] - Should pass address validation when provided valid record', function(done) {
+            const newClient = new Client({...sampleBasicClient, ...sampleClientAddress});
             newClient.validate(done);
         })
 
-        it('[artwork] - Should fail when artwork documents have missing required fields', (done) => {
+        it('[artwork] - Should fail when artwork documents have missing required fields', function(done)  {
             const incompleteArtwork = { artwork: [{ fakeField: 'Foo1' }, { fakeField: 'Foo2' }]};
-            const newClient = new Client({...seedBasicClient, ...incompleteArtwork});
+            const newClient = new Client({...sampleBasicClient, ...incompleteArtwork});
 
             newClient.validate((err) => {
                 expect(err.errors['artwork.0.artworkId'].name).to.be.equal('ValidatorError');
@@ -71,7 +85,7 @@ describe('## MODEL/CLIENT ##', () => {
             });
         });
 
-        it('[ArtworkBasicRef] - Should validate ArtworkBasicRef', (done) => {
+        it('[ArtworkBasicRef] - Should validate ArtworkBasicRef', function(done)  {
             const newArtworkBasicRef = new ArtworkBasicRef({
                 artworkId: mongoose.Types.ObjectId(),
                 name: 'Art 1',
@@ -83,17 +97,27 @@ describe('## MODEL/CLIENT ##', () => {
         })
     });
 
-    describe('Save Record', (done) => {
-        it('Should successfully save Client', (done) => {
-            const newClient = new Client(seedFullClient);
+    describe('Save Record', function(done)  {
+        it('Should successfully save Client', function(done)  {
+            const newClient = new Client(sampleFullClient);
             
             newClient.save()
                 .then(savedClient => {
-                    expect(savedClient.firstName).to.be.equal(seedFullClient.firstName);
-                    expect(savedClient.lastName).to.be.equal(seedFullClient.lastName);
+                    expect(savedClient.firstName).to.be.equal(sampleFullClient.firstName);
+                    expect(savedClient.lastName).to.be.equal(sampleFullClient.lastName);
                     done();
                 })
                 .catch(err => done(err));
+        });
+    });
+
+    describe('Method Tests', function()  {
+        it('[get] - Should not return a result if Id is not found', function() {
+            return Client.get(mongoose.Types.ObjectId()).should.be.rejected;
+        });
+
+        it('[get] - Should return a client if found', function() {            
+            return Client.get(seedFullClient._id).should.not.be.rejected;
         });
     });
 });

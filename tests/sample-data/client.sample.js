@@ -32,3 +32,8 @@ export const sampleClientBasicRef = {
 export const sampleClientAddress = sampleAddresses;
 export const sampleClientArtwork = sampleArtworkCoveredRef;
 export const sampleFullClient = {...sampleBasicClient, ...sampleClientAddress, ...sampleClientArtwork};
+export const sampleFullClientList = [
+    { ...{ firstName: 'Copernicus', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress, ...sampleClientArtwork },
+    { ...{ firstName: 'Tycho', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress, ...sampleClientArtwork },
+    { ...{ firstName: 'Kepler', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress, ...sampleClientArtwork }
+];

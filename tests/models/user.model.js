@@ -1,18 +1,41 @@
+import mongoose from 'mongoose';
 import User from '../../app/models/user.model';
 import Client from '../../app/models/client.model';
 import { expect } from 'chai';
 import { sampleBasicUser, sampleFullUser } from '../sample-data/user.sample';
-import { sampleClientBasicRef, sampleFullClient } from '../sample-data/client.sample'
+import { sampleClientBasicRef, sampleFullClient, sampleFullClientList } from '../sample-data/client.sample'
 import { sampleArtworkCoveredRef } from '../sample-data/artwork.sample';
 import util from 'util';
 
-describe('## MODEL/USER ##', () => {
-    beforeEach((done) => {
-        User.deleteMany({}, done);
+describe('## MODEL/USER ##', function()  {
+    var seedFullUser;
+    var savedFullUser;
+
+    before(function(done) {
+        const newUsers = [new User(sampleFullUser), new User(sampleFullUser), new User(sampleFullUser)];
+        newUsers[0].email = 'not_a_duplicate_0@fakeemail.com';
+        newUsers[1].email = 'not_a_duplicate_1@fakeemail.com';
+        newUsers[2].email = 'not_a_duplicate_2@fakeemail.com';
+
+        User.create(newUsers)
+            .then((results) => {
+                seedFullUser = results[0];
+                expect(results).to.have.length(3);
+                done();
+            })
+            .catch(done);
     });
 
-    describe('Field Validation', () => {
-        it('Should fail if missing required fields', (done) => {
+    // beforeEach(function(done)  {
+    //     User.deleteMany({}, done);
+    // });
+
+    after(function() {
+        return User.deleteMany({});
+    });
+
+    describe('Field Validation', function()  {
+        it('Should fail if missing required fields', function(done)  {
             const newUser = new User({});
             newUser.validate((err) => {
                 // console.log('---------------------------------------------');                
@@ -29,7 +52,7 @@ describe('## MODEL/USER ##', () => {
             });
         });
 
-        it('[accountStatus] - Should fail when provided an invalid accountStatus', (done) => {
+        it('[accountStatus] - Should fail when provided an invalid accountStatus', function(done)  {
             const newUser = new User(sampleBasicUser);
             newUser.accountStatus = 'foo';
 
@@ -39,13 +62,13 @@ describe('## MODEL/USER ##', () => {
             });
         });
 
-        it('[accountStatus] - Should pass when provided a valid accountStatus', (done) => {
+        it('[accountStatus] - Should pass when provided a valid accountStatus', function(done)  {
             const newUser = new User(sampleBasicUser);
 
             newUser.validate(done);
         });
 
-        it('[clients] - Should fail if Client record is invalid', (done) => {
+        it('[clients] - Should fail if Client record is invalid', function(done)  {
             const badCients = { clients: [{ field1: 'foo' }], clientRefs: [{ field1: 'Foo' }] };
             const newUser = new User({...sampleBasicUser, ...badCients });
 
@@ -64,14 +87,14 @@ describe('## MODEL/USER ##', () => {
             });
         });
 
-        it('[clients] - Should pass when provided a valid clients', (done) => {
+        it('[clients] - Should pass when provided a valid clients', function(done)  {
             const newClients = { clients: [sampleClientBasicRef, sampleClientBasicRef] };
             const newUser = new User({...sampleBasicUser, ...newClients});
 
             newUser.validate(done);
         });
 
-        it('[artwork] - Should fail if Artwork record is invalid', (done) => {
+        it('[artwork] - Should fail if Artwork record is invalid', function(done)  {
             const badArtwork = { artwork: [{ field1: 'Bar' }], artworkRefs: [{ field1: 'Foo' }]};
             const newUser = new User({ ...sampleBasicUser, ...badArtwork });
 
@@ -90,44 +113,66 @@ describe('## MODEL/USER ##', () => {
             });            
         });
 
-        it('[roles] - Should fail validation of a invalid role exists', (done) => {
+        it('[roles] - Should fail validation of a invalid role exists', function(done)  {
             const newUser = new User({...sampleBasicUser, ...sampleArtworkCoveredRef});
             newUser.roles = ['admin', 'boogeyman'];
 
             newUser.validate((err) => {
-                // console.log(util.inspect(err.errors, {colors: true }));
                 expect(err.errors['roles.1'].kind).to.be.equal('enum');
                 done();
             });
         });
 
-        it('[artwork] - Should pass when provided a valid records', (done) => {
+        it('[artwork] - Should pass when provided a valid records', function(done)  {
             const newUser = new User({...sampleBasicUser, ...sampleArtworkCoveredRef});
 
             newUser.validate(done);
         });
     });
 
-    describe('Save Record', (done) => {
-        it('Should successfully save Client', (done) => {
-            const newClient = new Client(sampleFullClient);
-            const newUser = new User(sampleFullUser);
-            newClient.save()
-                .then((savedClient) => {
-                    newUser.clientRefs = [savedClient];
+    describe('Save Record', function(done)  {
+        it('Should successfully save Client', function(done)  {
+            Client.create(sampleFullClientList)
+                .then((savedClients) => {
+                    const newUser = new User(sampleFullUser);
+                    newUser.clientRefs = savedClients;
 
                     newUser.save()
                         .then(savedUser => {
+                            savedFullUser = savedUser;
                             expect(savedUser.firstName).to.be.equal(sampleFullUser.firstName);
                             expect(savedUser.lastName).to.be.equal(sampleFullUser.lastName);
                             expect(savedUser.addresses).to.be.an('array').to.have.lengthOf(2);
                             expect(savedUser.artwork).to.be.an('array').to.have.lengthOf(4);
                             expect(savedUser.clients).to.be.an('array').to.have.lengthOf(2);
-                            expect(savedUser.clientRefs).to.be.an('array').to.have.lengthOf(1);
+                            expect(savedUser.clientRefs).to.be.an('array').to.have.lengthOf(3);
                             done();
                         })
                 })
                 .catch(done);
+        });
+    });
+
+    describe('Method Tests', function()  {
+        it('[get] - Should not return a result if Id is not found', function() {
+            return User.get(mongoose.Types.ObjectId()).should.be.rejected;
+        });
+
+        it('[get] - Should return a user if found', function(done) {            
+            User.get(savedFullUser._id)
+                .then((user) => {
+                    expect(user.clientRefs).to.have.length(3);
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('[findByEmail] - Should not return a result if matching email is not found', function() {
+            return User.findByEmail('super_fake_email@fakefakefake.com').should.be.rejected;
+        });
+
+        it('[findByEmail] - Should return a user if found', function() {            
+            return User.findByEmail(seedFullUser.email).should.not.be.rejected;
         });
     });
 });

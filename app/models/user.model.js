@@ -5,6 +5,7 @@ import APIError from '../helpers/APIError';
 import Address from './address.model';
 import ClientBasicRef from './clientRefs.model';
 import ArtworkBasicRef  from './artworkRefs.model';
+import util from 'util';
 
 const UserSchema = new mongoose.Schema({
     firstName: { type: String, required: true },
@@ -12,7 +13,6 @@ const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     roles: [{ type: String, required: true, enum: ['admin', 'user'] }],
-    // roles: { type: [String], required: true, enum: ['admin', 'user']},
     clients: { type: [ClientBasicRef.schema] },
     clientRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }],
     artwork: { type: [ArtworkBasicRef.schema] },
@@ -35,6 +35,7 @@ UserSchema.path('roles').validate((roles) => {
 UserSchema.statics = {
     get(id) {
         return this.findById(id)
+            .populate({ path: 'clientRefs' })
             .exec()
             .then((user) => {
                 if (user) return user;
@@ -48,12 +49,13 @@ UserSchema.statics = {
         return this.find({email})
             .exec()
             .then((user) => {
+                // console.log(util.inspect(user, {colors: true }));
                 if (user) {
                     if (user.length > 1) {
                         return Promise.reject(new APIError('Duplicate Records Found', httpStatus.BAD_REQUEST));
+                    } else if (user.length === 1) {
+                        return user[0];
                     }
-
-                    return user[0];
                 }
 
                 return Promise.reject(new APIError('User Not Found', httpStatus.NOT_FOUND));
@@ -62,22 +64,3 @@ UserSchema.statics = {
 }
 
 export default mongoose.model('User', UserSchema);
-
-// firstName,
-// lastName,
-// email,
-// password,
-// roles,
-// activationStatus,
-// createdDate,
-// clients: {
-//     id,
-//     firstName,
-//     lastName
-// },
-// artwork: {
-//     id,
-//     name,
-//     description,
-//     photoUrl
-// }

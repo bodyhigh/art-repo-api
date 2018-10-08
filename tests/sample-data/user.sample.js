@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
 import { sampleAddresses } from './address.sample';
 import { sampleArtworkCoveredRef } from './artwork.sample';
-import { sampleClientBasicRefs, sampleFullClient } from './client.sample';
+import { sampleClientBasicRefs } from './client.sample';
 
 export const sampleBasicUser = {
     firstName: 'Trajan',
@@ -11,7 +10,5 @@ export const sampleBasicUser = {
     roles: ['admin', 'user'],
     accountStatus: 'active'
 };
-
-// const sampleClientRefs = { clientRefs: [sampleFullClient, sampleFullClient]};
 
 export const sampleFullUser = {...sampleBasicUser, ...sampleAddresses, ...sampleArtworkCoveredRef, ...sampleClientBasicRefs };
