@@ -7,6 +7,8 @@ import cors from 'cors';
 import expressWinston from 'express-winston';
 import winstonInstance from './winston';
 
+import routes from './../app/routes/';
+
 const app = express();
 
 if (config.env === 'development') {
@@ -36,6 +38,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // ROUTES
+app.use('/api', routes);
 
 // ERROR HANDLING
 
