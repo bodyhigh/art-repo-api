@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema({
     clientRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }],
     artwork: { type: [ArtworkBasicRef.schema] },
     addresses: { type: [Address.schema] },
-    accountStatus: { type: String, required: true, enum: ['active', 'disabled'] },
+    accountStatus: { type: String, required: true, enum: ['active', 'disabled', 'registered'] },
     createDate: { type: Date, default: Date.now },
 });
 
