@@ -1,4 +1,3 @@
-// import authController from '../../app/controllers/auth.controller';
 import request from 'supertest-as-promised';
 import { expect } from 'chai';
 import httpStatus from 'http-status';

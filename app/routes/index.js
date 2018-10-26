@@ -9,21 +9,21 @@ import userRoutes from './user.route';
 const router = express.Router();
 
 // Paths that do not req JWT validation
-const unlessPaths = ['/api/auth/login', 
-    '/api/auth/register', 
-    '/api/health-check'];
+// const unlessPaths = ['/api/auth/login', 
+//     '/api/auth/register', 
+//     '/api/health-check'];
 
-router.use(
-	expressJwt({ secret: config.jwtSecret, requestProperty: 'identity' })
-		.unless({ path: unlessPaths })
-);
+// router.use(
+// 	expressJwt({ secret: config.jwtSecret, requestProperty: 'identity' })
+// 		.unless({ path: unlessPaths })
+// );
 
 router.get('/health-check', (req, res) => {
 	res.send('OK');
 });
 
 router.use('/auth', authRoutes);
-router.use('/users', userRoutes);
+router.use('/user', userRoutes);
 // router.use('/art', artRoutes);
 
 export default router;
