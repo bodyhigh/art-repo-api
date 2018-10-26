@@ -60,7 +60,21 @@ UserSchema.statics = {
 
                 return Promise.reject(new APIError('User Not Found', httpStatus.NOT_FOUND));
             });
-    }
+    },
+
+	/**
+	 * [list description]
+	 * @param  {Number} [skip=0]  [description]
+	 * @param  {[type]} [limit=50 }  = {}] [description]
+	 * @return {[type]} [description]
+	 */
+	list({ skip = 0, limit = 50 } = {}) {
+		return this.find()
+			.sort({ createDate: -1 })
+			.skip(+skip)
+			.limit(+limit)
+			.exec();
+	}
 }
 
 export default mongoose.model('User', UserSchema);

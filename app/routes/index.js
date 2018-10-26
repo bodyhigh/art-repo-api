@@ -3,7 +3,7 @@ import expressJwt from 'express-jwt';
 import unless from 'express-unless';
 import config from '../../config/config';
 import authRoutes from './auth.route';
-// import userRoutes from './user.route';
+import userRoutes from './user.route';
 // import artRoutes from './art.route';
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.get('/health-check', (req, res) => {
 });
 
 router.use('/auth', authRoutes);
-// router.use('/users', userRoutes);
+router.use('/users', userRoutes);
 // router.use('/art', artRoutes);
 
 export default router;

@@ -17,18 +17,17 @@ describe('## MODEL/USER ##', function()  {
         newUsers[1].email = 'not_a_duplicate_1@fakeemail.com';
         newUsers[2].email = 'not_a_duplicate_2@fakeemail.com';
 
-        User.create(newUsers)
-            .then((results) => {
-                seedFullUser = results[0];
-                expect(results).to.have.length(3);
-                done();
+        User.deleteMany({}).exec()
+            .then(() => {
+                User.create(newUsers)
+                    .then((results) => {
+                        seedFullUser = results[0];
+                        expect(results).to.have.length(3);
+                        done();
+                    });
             })
             .catch(done);
     });
-
-    // beforeEach(function(done)  {
-    //     User.deleteMany({}, done);
-    // });
 
     after(function() {
         return User.deleteMany({});

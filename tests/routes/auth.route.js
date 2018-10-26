@@ -3,14 +3,32 @@ import request from 'supertest-as-promised';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
 import app from '../../server'
-
-import util from 'util';
+import User from '../../app/models/user.model';
+import { sampleFullUser } from '../sample-data/user.sample';
+import util, { log } from 'util';
 
 describe('## ROUTE/AUTH ##', function()  {
     var insertedUser;
 
-    describe('POST: /api/register', function() {
-        it('POST: /api/register - Should create a new user with hashed password', (done) => {
+    before(function(done) {
+        const newUsers = [new User(sampleFullUser), new User(sampleFullUser), new User(sampleFullUser)];
+        newUsers[0].email = 'not_a_duplicate_0@fakeemail.com';
+        newUsers[1].email = 'not_a_duplicate_1@fakeemail.com';
+        newUsers[2].email = 'not_a_duplicate_2@fakeemail.com';
+
+        User.deleteMany({}).exec()
+            .then(() => {
+                User.create(newUsers)
+                    .then((results) => {
+                        expect(results).to.have.length(3);
+                        done();
+                    });
+            })
+            .catch(done);
+    });
+
+    describe('POST: /api/auth/register', function() {
+        it('Should create a new user with hashed password', (done) => {
             const newUser = {
                 firstName: 'Niccolai',
                 lastName: 'Dobbs',
@@ -54,7 +72,7 @@ describe('## ROUTE/AUTH ##', function()  {
         });
     });
 
-    describe('/api/auth/login', function() {
+    describe('POST: /api/auth/login', function() {
         it('Should successfully log in', function(done) {
             request(app)
                 .post('/api/auth/login')
