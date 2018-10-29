@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
+import httpStatus from 'http-status';
 import User from '../models/user.model';
-import Encryption from './../helpers/encryption';
+import APIError from '../helpers/APIError';
+//import Encryption from './../helpers/encryption';
 
 function load(req, res, next, id) {
 	User.get(id)
@@ -8,7 +10,11 @@ function load(req, res, next, id) {
 			req.user = user;
 			return next();
 		})
-		.catch(e => next(e));
+		.catch((e) => {
+			//TODO: We should log e.message
+			next(new APIError('User Not Found', httpStatus.NOT_FOUND));
+		})
+		// .catch(e => next(e));
 }
 
 function get(req, res, next) {

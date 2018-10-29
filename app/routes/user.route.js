@@ -5,7 +5,10 @@ const router = express.Router();
 
 router.route('/')
     .get(userController.list);
-    
+
+router.route('/:id')
+    .get(userController.get);
+
 /**
  * Load user if id is a parameter
  */

@@ -37,7 +37,7 @@ UserSchema.statics = {
         return this.findById(id)
             .populate({ path: 'clientRefs' })
             .exec()
-            .then((user) => {
+            .then((user) => {                
                 if (user) return user;
 
                 const err = new APIError('User Not Found.', httpStatus.NOT_FOUND);

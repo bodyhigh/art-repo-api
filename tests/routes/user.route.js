@@ -8,6 +8,7 @@ import { sampleFullUser } from '../sample-data/user.sample';
 import util, { log } from 'util';
 
 var token = jwtHelper.createToken(sampleFullUser);
+var seededUsers;
 
 describe('## ROUTE/USER ##', function()  {
     before(function(done) {
@@ -20,6 +21,8 @@ describe('## ROUTE/USER ##', function()  {
             .then(() => {
                 User.create(newUsers)
                     .then((res) => {
+                        seededUsers = res;
+                        // console.log(util.inspect(res[0], { colors: true }));
                         expect(res).to.have.length(3);
                         done();
                     });
@@ -37,6 +40,33 @@ describe('## ROUTE/USER ##', function()  {
                 .then((res) => {
                     expect(res.body).to.have.length(3);
                     done();
+                })
+                .catch(done);
+        });
+    });
+
+    describe('GET: /api/user/:id', function() {
+        it('Should return an error if user not found', function(done) {
+            request(app)
+                .get('/api/user/9999')
+                .set('Authorization', `bearer ${token}`)
+                .expect(httpStatus.NOT_FOUND)
+                .then((res) => {                     
+                    done(); 
+                })
+                .catch(done);
+        });
+
+        it('Should return a single record if user is found', function(done) {
+            request(app)
+                .get(`/api/user/${seededUsers[0].id}`)
+                .set('Authorization', `bearer ${token}`)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body).to.not.be.an('array');
+                    expect(res).to.not.be.undefined;
+                    expect(res.body._id).to.be.equal(seededUsers[0].id)
+                    done(); 
                 })
                 .catch(done);
         });
