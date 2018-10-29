@@ -1,10 +1,13 @@
 import request from 'supertest-as-promised';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
+import jwtHelper from '../../app/helpers/jwtToken';
 import app from '../../server'
 import User from '../../app/models/user.model';
 import { sampleFullUser } from '../sample-data/user.sample';
 import util, { log } from 'util';
+
+var token = jwtHelper.createToken(sampleFullUser);
 
 describe('## ROUTE/USER ##', function()  {
     before(function(done) {
@@ -26,12 +29,13 @@ describe('## ROUTE/USER ##', function()  {
 
     describe('GET: /api/user', function() {
         it('Should return back the correct number of user records', function(done) {
+            // console.log(util.inspect(token, { colors: true }));
             request(app)
                 .get('/api/user')
+                .set('Authorization', `bearer ${token}`)
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body).to.have.length(3);
-                    // console.log(util.inspect(res.body, { colors: true }));                    
                     done();
                 })
                 .catch(done);

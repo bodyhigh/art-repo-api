@@ -78,8 +78,8 @@ describe('## ROUTE/AUTH ##', function()  {
                 .send({ email: insertedUser.email, password: 'password' })
                 .expect(httpStatus.OK)
                 .then((res) => {
-                    // console.log(util.inspect(insertedUser));
                     expect(res.body.success).to.be.true;
+                    expect(res.body.token).to.not.be.undefined;
                     expect(res.body.userId).to.equal(insertedUser._id);
                     expect(res.body.firstName).to.equal(insertedUser.firstName);
                     expect(res.body.lastName).to.equal(insertedUser.lastName);
