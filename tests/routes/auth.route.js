@@ -8,6 +8,13 @@ import util, { log } from 'util';
 
 describe('## ROUTE/AUTH ##', function()  {
     var insertedUser;
+    var newUser = {
+        firstName: 'Niccolai',
+        lastName: 'Dobbs',
+        email: 'nickydobbs@fakefakefake.com',
+        password: 'password',
+        passwordConfirm: 'password'
+    };
 
     before(function(done) {
         const newUsers = [new User(sampleFullUser), new User(sampleFullUser), new User(sampleFullUser)];
@@ -27,14 +34,71 @@ describe('## ROUTE/AUTH ##', function()  {
     });
 
     describe('POST: /api/auth/register', function() {
-        it('Should create a new user with hashed password', (done) => {
-            const newUser = {
-                firstName: 'Niccolai',
-                lastName: 'Dobbs',
-                email: 'nickydobbs@fakefakefake.com',
-                password: 'password'
-            };
+        it('Should fail request validation if first name is empty', (done) => {
+            const tempUser = { ...newUser };
+            tempUser.firstName = '';
     
+            request(app)
+                .post('/api/auth/register')
+                .send(tempUser)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.success).to.be.false;
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should fail request validation if last name is empty', (done) => {
+            const tempUser = { ...newUser };
+            tempUser.lastName = '';
+    
+            request(app)
+                .post('/api/auth/register')
+                .send(tempUser)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.success).to.be.false;
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should fail request validation if email is empty', (done) => {
+            const tempUser = { ...newUser };
+            tempUser.email = '';
+    
+            request(app)
+                .post('/api/auth/register')
+                .send(tempUser)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.success).to.be.false;
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should fail request validation if password is empty', (done) => {
+            const tempUser = { ...newUser };
+            tempUser.password = '';
+    
+            request(app)
+                .post('/api/auth/register')
+                .send(tempUser)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.success).to.be.false;
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should create a new user with hashed password', (done) => {    
             request(app)
                 .post('/api/auth/register')
                 .send(newUser)
@@ -51,13 +115,6 @@ describe('## ROUTE/AUTH ##', function()  {
         });
     
         it('Should not allow me to create a duplicate user (email unique)', (done) => {
-            const newUser = {
-                firstName: 'Niccolai',
-                lastName: 'Dobbs',
-                email: 'nickydobbs@fakefakefake.com',
-                password: 'password'
-            };
-    
             request(app)
                 .post('/api/auth/register')
                 .send(newUser)
@@ -101,17 +158,44 @@ describe('## ROUTE/AUTH ##', function()  {
                 .catch(done);
         });
 
-        it('Should fail when provided incorrect email', function(done) {            
+        it('Should fail parameter validation when parameters are missing', function(done) {            
+            request(app)
+                .post('/api/auth/login')
+                .send({ foo: 'bar' })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.success).to.be.false;
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should fail parameter validation when provided incorrect email type', function(done) {            
             request(app)
                 .post('/api/auth/login')
                 .send({ email: 'not_a_valid_email', password: 'not_a_valid_password' })
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_CREDENTIALS');
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
                     done();
                 })
                 .catch(done);
         });
+
+        it('Should fail parameter validation password does not meet min length', function(done) {            
+            request(app)
+                .post('/api/auth/login')
+                .send({ email: 'not_a_valid_email', password: '1234567' })
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.success).to.be.false;
+                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    done();
+                })
+                .catch(done);
+        });
+
     });
 });

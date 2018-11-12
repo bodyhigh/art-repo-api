@@ -38,45 +38,45 @@ function register(req, res, next) {
 
 function login(req, res, next) {
 	User.findByEmail(req.body.email)
-		.then((user) => {     
-			if (user !== undefined) {
-				Encryption.compareStringsAsync(req.body.password, user.password)
-					.then((matched) => {						
-						if (matched) {
-							res.json({
-								success: true,
-								token: jwtToken.createToken(user),
-								firstName: user.firstName,
-								lastName: user.lastName,
-                                userId: user.id,
-                                roles: user.roles
-							});
-						} else {
-							res.json({ 
-								success: false, 
-								errorCode: 'INVALID_CREDENTIALS', 
-								message: 'Invalid login credentials' 
-							});
-						}
-					})
-					.catch(e => next(e));
-			} else {
-				next(new APIError('Error in method findByEmail()', httpStatus.INTERNAL_SERVER_ERROR));
-			}
-		})
-		.catch((e) => {
-			// User Not Found
-			if (e.status === httpStatus.NOT_FOUND) {
-				res.json({ 
-					success: false, 
-					errorCode: 'INVALID_CREDENTIALS', 
-					message: 'Invalid login credentials' 
-				});
-			} else {
-				// console.log(util.inspect(Object.keys(e), { colors: true }));
-				next(e);
-			}
-		});
+	.then((user) => {     
+		if (user !== undefined) {
+			Encryption.compareStringsAsync(req.body.password, user.password)
+				.then((matched) => {						
+					if (matched) {
+						res.json({
+							success: true,
+							token: jwtToken.createToken(user),
+							firstName: user.firstName,
+							lastName: user.lastName,
+							userId: user.id,
+							roles: user.roles
+						});
+					} else {
+						res.json({ 
+							success: false, 
+							errorCode: 'INVALID_CREDENTIALS', 
+							message: 'Invalid login credentials' 
+						});
+					}
+				})
+				.catch(e => next(e));
+		} else {
+			next(new APIError('Error in method findByEmail()', httpStatus.INTERNAL_SERVER_ERROR));
+		}
+	})
+	.catch((e) => {
+		// User Not Found
+		if (e.status === httpStatus.NOT_FOUND) {
+			res.json({ 
+				success: false, 
+				errorCode: 'INVALID_CREDENTIALS', 
+				message: 'Invalid login credentials' 
+			});
+		} else {
+			// console.log(util.inspect(Object.keys(e), { colors: true }));
+			next(e);
+		}
+	});
 }
 
 export default { register, login };
