@@ -118,10 +118,10 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/register')
                 .send(newUser)
-                .expect(httpStatus.OK)
+                .expect(httpStatus.INTERNAL_SERVER_ERROR)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('DUPLICATE_EMAIL');
+                    // console.log(util.inspect(res.body));
+                    expect(res.body.errors[0].errorCode).to.be.equal('REGISTER_DUPLICATE_EMAIL');
                     done();
                 })
                 .catch(done);

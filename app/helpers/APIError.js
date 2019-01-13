@@ -30,7 +30,7 @@ class APIError extends ExtendableError {
 	constructor(message, status = httpStatus.INTERNAL_SERVER_ERROR, isPublic = false, errors = []) {
         super(message, status, isPublic);
         this.errors = errors;
-	}
+    }
 }
 
 export default APIError;

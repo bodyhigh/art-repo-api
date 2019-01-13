@@ -3,6 +3,7 @@ import Encryption from '../helpers/encryption';
 import jwtToken from '../helpers/jwtToken';
 import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
+import { REGISTER_DUPLICATE_EMAIL } from '../helpers/errorCodes';
 import util from 'util';
 import { doesNotReject } from 'assert';
 
@@ -23,11 +24,16 @@ function register(req, res, next) {
 				.catch((e) => {
 					// Duplicate Key Found
 					if (e.code === 11000) {
-						res.json({
-							success: false,
-							errorCode: 'DUPLICATE_EMAIL',
-							errmsg: e.errmsg
-						});
+                        next(new APIError(e.errmsg, 
+                            httpStatus.INTERNAL_SERVER_ERROR, 
+                            true, 
+                            [REGISTER_DUPLICATE_EMAIL]));
+						// res.json({
+						// 	success: false,
+						// 	// errorCode: 'DUPLICATE_EMAIL',
+                        //     errorMessage: e.errmsg,
+                        //     ... REGISTER_DUPLICATE_EMAIL
+						// });
 					} else {
 						next(e);
 					}
