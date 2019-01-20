@@ -6,6 +6,7 @@ import APIError from '../helpers/APIError';
 import { REGISTER_DUPLICATE_EMAIL } from '../helpers/errorCodes';
 import util from 'util';
 import { doesNotReject } from 'assert';
+import { hasinstanceOf } from '../helpers/typeHelper';  
 
 function register(req, res, next) {
 	Encryption.hashStringAsync(req.body.password)
@@ -24,10 +25,21 @@ function register(req, res, next) {
 				.catch((e) => {
 					// Duplicate Key Found
 					if (e.code === 11000) {
-                        next(new APIError(e.errmsg, 
+                        // next(new APIError(e.errmsg, 
+                        //     httpStatus.INTERNAL_SERVER_ERROR, 
+                        //     true, 
+                        //     [REGISTER_DUPLICATE_EMAIL]));
+
+                        let error = new APIError(e.errmsg, 
                             httpStatus.INTERNAL_SERVER_ERROR, 
                             true, 
-                            [REGISTER_DUPLICATE_EMAIL]));
+                            [REGISTER_DUPLICATE_EMAIL]);
+
+                        console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+                        console.log(hasinstanceOf(error, APIError));
+                        // console.log(APIError.name);
+                        // hasinstanceOf(error, APIError);
+                        next(error);
 						// res.json({
 						// 	success: false,
 						// 	// errorCode: 'DUPLICATE_EMAIL',
