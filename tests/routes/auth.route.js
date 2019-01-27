@@ -120,7 +120,6 @@ describe('## ROUTE/AUTH ##', function()  {
                 .send(newUser)
                 .expect(httpStatus.INTERNAL_SERVER_ERROR)
                 .then((res) => {
-                    // console.log(util.inspect(res.body));
                     expect(res.body.errors[0].errorCode).to.be.equal('REGISTER_DUPLICATE_EMAIL');
                     done();
                 })
@@ -149,10 +148,10 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/login')
                 .send({ email: insertedUser.email, password: 'not_a_valid_password' })
-                .expect(httpStatus.OK)
+                .expect(httpStatus.INTERNAL_SERVER_ERROR)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_CREDENTIALS');
+                    // console.log(util.inspect(res.body, { colors: true}));
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_CREDENTIALS');
                     done();
                 })
                 .catch(done);

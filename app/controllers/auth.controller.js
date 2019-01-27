@@ -3,10 +3,10 @@ import Encryption from '../helpers/encryption';
 import jwtToken from '../helpers/jwtToken';
 import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
-import { REGISTER_DUPLICATE_EMAIL } from '../helpers/errorCodes';
+import errorCodes from '../helpers/errorCodes';
+import mongoErrorCodes from '../helpers/mongoErrorCodes';
 import util from 'util';
-import { doesNotReject } from 'assert';
-import { hasinstanceOf } from '../helpers/typeHelper';  
+// import { doesNotReject } from 'assert';
 
 function register(req, res, next) {
 	Encryption.hashStringAsync(req.body.password)
@@ -24,28 +24,11 @@ function register(req, res, next) {
 				.then((savedUser) => res.json(savedUser))
 				.catch((e) => {
 					// Duplicate Key Found
-					if (e.code === 11000) {
-                        // next(new APIError(e.errmsg, 
-                        //     httpStatus.INTERNAL_SERVER_ERROR, 
-                        //     true, 
-                        //     [REGISTER_DUPLICATE_EMAIL]));
-
-                        let error = new APIError(e.errmsg, 
+					if (e.code === mongoErrorCodes.DUPLICATE_KEY_ERROR) {						
+						next(new APIError(e.errmsg, 
                             httpStatus.INTERNAL_SERVER_ERROR, 
                             true, 
-                            [REGISTER_DUPLICATE_EMAIL]);
-
-                        console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-                        console.log(hasinstanceOf(error, APIError));
-                        // console.log(APIError.name);
-                        // hasinstanceOf(error, APIError);
-                        next(error);
-						// res.json({
-						// 	success: false,
-						// 	// errorCode: 'DUPLICATE_EMAIL',
-                        //     errorMessage: e.errmsg,
-                        //     ... REGISTER_DUPLICATE_EMAIL
-						// });
+                            [errorCodes.REGISTER_DUPLICATE_EMAIL]));
 					} else {
 						next(e);
 					}
@@ -70,11 +53,10 @@ function login(req, res, next) {
 							roles: user.roles
 						});
 					} else {
-						res.json({ 
-							success: false, 
-							errorCode: 'INVALID_CREDENTIALS', 
-							message: 'Invalid login credentials' 
-						});
+						next(new APIError(errorCodes.INVALID_CREDENTIALS.description, 
+                            httpStatus.INTERNAL_SERVER_ERROR, 
+                            true, 
+                            [errorCodes.INVALID_CREDENTIALS]));
 					}
 				})
 				.catch(e => next(e));
@@ -85,11 +67,10 @@ function login(req, res, next) {
 	.catch((e) => {
 		// User Not Found
 		if (e.status === httpStatus.NOT_FOUND) {
-			res.json({ 
-				success: false, 
-				errorCode: 'INVALID_CREDENTIALS', 
-				message: 'Invalid login credentials' 
-			});
+			next(new APIError(errorCodes.INVALID_CREDENTIALS.description, 
+				httpStatus.INTERNAL_SERVER_ERROR, 
+				true, 
+				[errorCodes.INVALID_CREDENTIALS]));
 		} else {
 			// console.log(util.inspect(Object.keys(e), { colors: true }));
 			next(e);
