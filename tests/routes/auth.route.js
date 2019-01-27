@@ -41,10 +41,11 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/register')
                 .send(tempUser)
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    // console.log(util.inspect(res.body, { colors: true}));
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('firstName');
                     done();
                 })
                 .catch(done);
@@ -57,10 +58,10 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/register')
                 .send(tempUser)
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('lastName');
                     done();
                 })
                 .catch(done);
@@ -73,10 +74,10 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/register')
                 .send(tempUser)
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('email');
                     done();
                 })
                 .catch(done);
@@ -89,10 +90,10 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/register')
                 .send(tempUser)
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('password');
                     done();
                 })
                 .catch(done);
@@ -161,10 +162,11 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/login')
                 .send({ foo: 'bar' })
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('email');
+                    expect(res.body.errors[2].param).to.be.equal('password');
                     done();
                 })
                 .catch(done);
@@ -174,10 +176,11 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/login')
                 .send({ email: 'not_a_valid_email', password: 'not_a_valid_password' })
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('email');
+                    expect(res.body.errors[1].msg).to.be.equal('Invalid value');
                     done();
                 })
                 .catch(done);
@@ -187,10 +190,12 @@ describe('## ROUTE/AUTH ##', function()  {
             request(app)
                 .post('/api/auth/login')
                 .send({ email: 'not_a_valid_email', password: '1234567' })
-                .expect(httpStatus.OK)
+                .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
-                    expect(res.body.success).to.be.false;
-                    expect(res.body.errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('email');
+                    expect(res.body.errors[1].msg).to.be.equal('Invalid value');
+                    expect(res.body.errors[2].param).to.be.equal('password');
                     done();
                 })
                 .catch(done);
