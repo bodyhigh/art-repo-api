@@ -1,3 +1,4 @@
+//@ts-check
 export default {
     INVALID_CREDENTIALS: {
         errorCode: 'INVALID_CREDENTIALS',
@@ -10,13 +11,7 @@ export default {
     },
 
     REGISTER_DUPLICATE_EMAIL: {
-        errorCode: 'REGISTER_DUPLICATE_EMAIL', 
-        description: 'Email address has already been registered'         
+        errorCode: 'REGISTER_DUPLICATE_EMAIL',
+        description: 'Email address has already been registered'
     },
 };
-
-// export const REGISTER_DUPLICATE_EMAIL = { 
-//     errorCode: 'REGISTER_DUPLICATE_EMAIL', 
-//     description: 'Email address has already been registered' 
-// };
-
