@@ -16,8 +16,13 @@ describe('## ROUTE/AUTH ##', function()  {
         passwordConfirm: 'password'
     };
 
+    var activeUser = {...sampleFullUser};
+    activeUser.email = 'active@helloworld.com';
+    activeUser.password = 'password';
+    activeUser.accountStatus = 'active';
+
     before(function(done) {
-        const newUsers = [new User(sampleFullUser), new User(sampleFullUser), new User(sampleFullUser)];
+        const newUsers = [new User(sampleFullUser), new User(sampleFullUser), new User(sampleFullUser), new User(activeUser)];
         newUsers[0].email = 'not_a_duplicate_0@fakeemail.com';
         newUsers[1].email = 'not_a_duplicate_1@fakeemail.com';
         newUsers[2].email = 'not_a_duplicate_2@fakeemail.com';
@@ -26,7 +31,7 @@ describe('## ROUTE/AUTH ##', function()  {
             .then(() => {
                 User.create(newUsers)
                     .then((results) => {
-                        expect(results).to.have.length(3);
+                        expect(results).to.have.length(4);
                         done();
                     });
             })
@@ -129,8 +134,26 @@ describe('## ROUTE/AUTH ##', function()  {
     });
 
     describe('POST: /api/auth/login', function() {
-        it('Should successfully log in', function(done) {
+        it('Should fail log in for accountStatus not active', function(done) {
             request(app)
+                .post('/api/auth/login')
+                .send({ email: insertedUser.email, password: 'password' })
+                .expect(httpStatus.INTERNAL_SERVER_ERROR)
+                .then((res) => {
+                    // console.log(util.inspect(res.body, { colors: true}));
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_CREDENTIALS');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should successfully log in', function(done) {
+            // Set the accountStatus to 'active'
+            var query = {'email': insertedUser.email}
+            User.findOneAndUpdate(query, { accountStatus: 'active'}, function(err, res) {
+                if (err) done(err);
+
+                request(app)
                 .post('/api/auth/login')
                 .send({ email: insertedUser.email, password: 'password' })
                 .expect(httpStatus.OK)
@@ -143,6 +166,7 @@ describe('## ROUTE/AUTH ##', function()  {
                     done();
                 })
                 .catch(done);
+            });
         });
 
         it('Should fail when provided incorrect password', function(done) {

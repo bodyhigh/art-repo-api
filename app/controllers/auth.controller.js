@@ -8,6 +8,11 @@ import mongoErrorCodes from '../helpers/mongoErrorCodes';
 import util from 'util';
 // import { doesNotReject } from 'assert';
 
+//TODO: this should really be a property of the user model
+function isActive(user) {	
+	return user.accountStatus === 'active';
+}
+
 function register(req, res, next) {
 	Encryption.hashStringAsync(req.body.password)
 		.then((hashedPassword) => {
@@ -37,13 +42,13 @@ function register(req, res, next) {
 		.catch(e => next(e));
 }
 
-function login(req, res, next) {
+function login(req, res, next) {	
 	User.findByEmail(req.body.email)
-	.then((user) => {     
+	.then((user) => {    		 
 		if (user !== undefined) {
 			Encryption.compareStringsAsync(req.body.password, user.password)
-				.then((matched) => {						
-					if (matched) {
+				.then((matched) => {
+					if (matched && isActive(user)) {
 						res.json({
 							success: true,
 							token: jwtToken.createToken(user),
@@ -78,4 +83,4 @@ function login(req, res, next) {
 	});
 }
 
-export default { register, login };
+export default { isActive, register, login };
