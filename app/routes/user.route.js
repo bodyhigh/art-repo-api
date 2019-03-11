@@ -1,13 +1,14 @@
 import express from 'express';
 import userController from '../controllers/user.controller';
+import authMiddleware from '../middleware/auth.middleware';
 
 const router = express.Router();
 
 router.route('/')
-    .get(userController.list);
+    .get(authMiddleware.adminGuard, userController.list);
 
 router.route('/:id')
-    .get(userController.get);
+    .get(authMiddleware.adminGuard, userController.get);
 
 /**
  * Load user if id is a parameter

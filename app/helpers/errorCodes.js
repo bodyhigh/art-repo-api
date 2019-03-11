@@ -1,5 +1,10 @@
 //@ts-check
 export default {
+    CREDENTIALS_REQUIRED: {
+        errorCode: 'CREDENTIALS_REQUIRED',
+        description: 'No authorization token was found'
+    },
+
     INVALID_CREDENTIALS: {
         errorCode: 'INVALID_CREDENTIALS',
         description: 'Invalid login credentials'
@@ -8,6 +13,11 @@ export default {
     INVALID_REQUEST_PARAMETERS: {
         errorCode: 'INVALID_REQUEST_PARAMETERS',
         description: 'Invalid request parameters'
+    },
+
+    INVALID_ROLE_PERMISSIONS: {
+        errorCode: 'INVALID_ROLE_PERMISSIONS',
+        description: 'Invalid role permissions'
     },
 
     REGISTER_DUPLICATE_EMAIL: {
