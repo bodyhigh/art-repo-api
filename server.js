@@ -10,7 +10,8 @@ const options = {
     user: config.mongo.user,
     pass: config.mongo.pass,
     useNewUrlParser: true,
-    keepAlive: true
+    keepAlive: true,
+    useUnifiedTopology: true
 };
 
 mongoose.Promise = Promise;
