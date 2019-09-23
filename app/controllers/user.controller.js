@@ -39,8 +39,8 @@ function get(req, res, next) {
  * @param {any} next 
  */
 function list(req, res, next) {
-	const { skip = 0, limit = 50 } = req.query;
-	User.list({ skip, limit })
+	const { itemsPerPage, pageNumber } = req.query;
+	User.list({ itemsPerPage, pageNumber })
 		.then(users => res.json(users))
 		.catch(e => next(e));
 }

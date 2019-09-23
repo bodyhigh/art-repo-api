@@ -38,7 +38,9 @@ describe('## ROUTE/USER ##', function()  {
                 .set('Authorization', `bearer ${token}`)
                 .expect(httpStatus.OK)
                 .then((res) => {
-                    expect(res.body).to.have.length(3);
+                    let data = JSON.parse(res.body).data;
+                    // console.log(util.inspect(data, { colors: true }));
+                    expect(data).to.have.length(3);
                     done();
                 })
                 .catch(done);

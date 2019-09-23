@@ -62,19 +62,28 @@ UserSchema.statics = {
             });
     },
 
-	/**
-	 * [list description]
-	 * @param  {Number} [skip=0]  [description]
-	 * @param  {[type]} [limit=50 }  = {}] [description]
-	 * @return {[type]} [description]
-	 */
-	list({ skip = 0, limit = 50 } = {}) {
+    /**
+     * Will return a paged list of users
+     *
+     * @param {*} [{ itemsPerPage = 25, pageNumber = 0 }={}]
+     * @returns { totalCount: number, data: []}
+     */
+    list({ itemsPerPage = 25, pageNumber = 0 } = {}) {
 		return this.find()
 			.sort({ createDate: -1 })
-			.skip(+skip)
-			.limit(+limit)
-			.exec();
-	}
-}
+			.skip(+itemsPerPage * +pageNumber)
+			.limit(+itemsPerPage)
+			.then(users => {
+                if (users.length === 0) {
+                    return JSON.stringify({ totalCount: 0, data: []});
+                } else {
+                    return this.count()
+                        .then(totalCount => {
+                            return JSON.stringify({ totalCount: totalCount, data: users});
+                        });
+                }
+            });
+    }
+};
 
 export default mongoose.model('User', UserSchema);
