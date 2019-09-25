@@ -30,7 +30,7 @@ artifacts:
     - '**/*'
   discard-paths: yes
   base-directory:
-    - 'dist/
+    - 'dist/'
 #    - index.html
 #    - package.json
 #    - node_modules/async/*
