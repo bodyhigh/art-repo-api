@@ -28,6 +28,9 @@ phases:
 artifacts:
   files:
     - '**/*'
+  discard-paths: yes
+  base-directory:
+    - 'dist/
 #    - index.html
 #    - package.json
 #    - node_modules/async/*
