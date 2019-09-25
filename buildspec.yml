@@ -28,7 +28,7 @@ phases:
 artifacts:
   files:
     - '**/*'
-  discard-paths: yes
+  #discard-paths: yes
   base-directory:
     - 'dist'
 #    - index.html
