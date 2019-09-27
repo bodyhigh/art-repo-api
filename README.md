@@ -4,3 +4,7 @@
 [![Build Status](https://travis-ci.org/bodyhigh/art-repo-api.svg?branch=master)](https://travis-ci.org/bodyhigh/art-repo-api)
 
 updated todos here
+## TODO:
+- [ ] Add a CI script to package.json
+- [ ] Add minification step during the build process
+- [ ] Use JSDoc to document the API
