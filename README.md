@@ -5,6 +5,6 @@
 
 updated todos here
 ## TODO:
-- [ ] Add a CI script to package.json
+- [X] Add a CI script to package.json
 - [ ] Add minification step during the build process
 - [ ] Use JSDoc to document the API
