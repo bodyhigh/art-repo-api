@@ -65,12 +65,13 @@ UserSchema.statics = {
     /**
      * Will return a paged list of users
      *
-     * @param {*} [{ itemsPerPage = 25, pageNumber = 0 }={}]
-     * @returns { totalCount: number, data: []}
+     * @param {*} [{ itemsPerPage = 25, pageNumber = 0, sort = { createDate: -1} }={}]
+     * @returns
      */
-    list({ itemsPerPage = 25, pageNumber = 0 } = {}) {
-		return this.find()
-			.sort({ createDate: -1 })
+    list({ itemsPerPage = 25, pageNumber = 0, sort = { createDate: -1} } = {}) {
+        return this.find()
+            .collation({ locale: "en" })
+			.sort(sort)
 			.skip(+itemsPerPage * +pageNumber)
 			.limit(+itemsPerPage)
 			.then(users => {

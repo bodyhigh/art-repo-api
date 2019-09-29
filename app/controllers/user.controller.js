@@ -39,8 +39,11 @@ function get(req, res, next) {
  * @param {any} next 
  */
 function list(req, res, next) {
-	const { itemsPerPage, pageNumber } = req.query;
-	User.list({ itemsPerPage, pageNumber })
+	const { itemsPerPage, pageNumber, sortFieldName, sortDirection } = req.query;
+	let sort = {};
+	sort[sortFieldName] = sortDirection === "asc" ? 1 : -1;
+
+	User.list({ itemsPerPage, pageNumber, sort })
 		.then(users => res.json(users))
 		.catch(e => next(e));
 }
