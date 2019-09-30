@@ -19,7 +19,7 @@ function load(req, res, next, id) {
 		.catch((e) => {
 			//TODO: We should log e.message
 			next(new APIError('User Not Found', httpStatus.NOT_FOUND));
-		})
+		});
 }
 
 /**
@@ -33,19 +33,39 @@ function get(req, res, next) {
 }
 
 /**
- * Returns a list of users.  Additional parameters available from req.query { skip, limit }
+ * Returns a list of users.  Additional parameters available from req.query { itemsPerPage, 
+ * pageNumber, sortFieldName, sortDirection, searchTerm }
  * @param {any} req 
  * @param {any} res 
  * @param {any} next 
  */
 function list(req, res, next) {
-	const { itemsPerPage, pageNumber, sortFieldName, sortDirection } = req.query;
-	let sort = {};
+	const { itemsPerPage, pageNumber, sortFieldName, sortDirection, searchTerm } = req.query;
+	const sort = {};
 	sort[sortFieldName] = sortDirection === "asc" ? 1 : -1;
 
-	User.list({ itemsPerPage, pageNumber, sort })
+	let searchTermQuery = {};
+	if (searchTerm) {
+		// Option 1
+		searchTermQuery = { $or: ["firstName", "lastName", "email", "accountStatus"].map(field => {
+			const item = {};
+			item[field] = { $regex : new RegExp(searchTerm, "i")};
+			return item;
+		})};
+		
+		// // Option 2
+		// const searchTermRegEx = { $regex : new RegExp(searchTerm, "i")};
+		// searchTermQuery = { $or: [
+		// 	{ firstName: searchTermRegEx },
+		// 	{ lastName: searchTermRegEx },
+		// 	{ email: searchTermRegEx },
+		// 	{ accountStatus: searchTermRegEx }
+		// ]};
+	}
+
+	User.list({ itemsPerPage, pageNumber, sort, searchTermQuery })
 		.then(users => res.json(users))
 		.catch(e => next(e));
 }
 
-export default { load, get, list }
+export default { load, get, list };
