@@ -78,7 +78,7 @@ UserSchema.statics = {
                 if (users.length === 0) {
                     return JSON.stringify({ totalCount: 0, data: []});
                 } else {
-                    return this.count()
+                    return this.count(searchTermQuery)
                         .then(totalCount => {
                             return JSON.stringify({ totalCount: totalCount, data: users});
                         });
