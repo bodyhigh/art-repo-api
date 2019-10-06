@@ -35,9 +35,9 @@ UserSchema.path('roles').validate((roles) => {
 UserSchema.statics = {
     get(id) {
         return this.findById(id)
-            .populate({ path: 'clientRefs' })
+            // .populate({ path: 'clientRefs' }) /* TODO: Not sure is this is required for returning client refs */
             .exec()
-            .then((user) => {                
+            .then((user) => {
                 if (user) return user;
 
                 const err = new APIError('User Not Found.', httpStatus.NOT_FOUND);
