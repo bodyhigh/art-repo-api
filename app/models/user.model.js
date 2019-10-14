@@ -45,6 +45,12 @@ UserSchema.statics = {
             });
     },
 
+    /**
+     * Find user account by email address
+     *
+     * @param {*} email
+     * @returns
+     */
     findByEmail(email) {
         return this.find({email})
             .exec()
@@ -63,7 +69,8 @@ UserSchema.statics = {
     },
 
     /**
-     * Will return a paged list of users
+     * This method will return a list of users that according to searchTermQuery values.
+     * The result set is paged and includes the total result count.
      *
      * @param {*} [{ itemsPerPage = 25, pageNumber = 0, sort = { lastName: 1 }, searchTermQuery = {} }={}]
      * @returns
@@ -78,7 +85,7 @@ UserSchema.statics = {
                 if (users.length === 0) {
                     return JSON.stringify({ totalCount: 0, data: []});
                 } else {
-                    return this.count(searchTermQuery)
+                    return this.countDocuments(searchTermQuery)
                         .then(totalCount => {
                             return JSON.stringify({ totalCount: totalCount, data: users});
                         });

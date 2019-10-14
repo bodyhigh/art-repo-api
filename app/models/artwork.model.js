@@ -26,7 +26,7 @@ const ArtworkSchema = new mongoose.Schema({
     },
 });
 
-ArtworkSchema.index({ artistId: 1 });
+ArtworkSchema.index({ artistId: 1, type: -1 });
 
 ArtworkSchema.statics = {
     get(id) {

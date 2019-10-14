@@ -13,7 +13,7 @@ const ClientSchema = new mongoose.Schema({
     addresses: { type: [Address.schema] },
 });
 
-ClientSchema.index({ artistId: 1 });
+ClientSchema.index({ artistId: 1, type: -1 });
 
 ClientSchema.statics = {
     get(id) {
