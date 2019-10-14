@@ -35,9 +35,9 @@ UserSchema.path('roles').validate((roles) => {
 UserSchema.statics = {
     get(id) {
         return this.findById(id)
-            .populate({ path: 'clientRefs' })
+            // .populate({ path: 'clientRefs' }) /* TODO: Not sure is this is required for returning client refs */
             .exec()
-            .then((user) => {                
+            .then((user) => {
                 if (user) return user;
 
                 const err = new APIError('User Not Found.', httpStatus.NOT_FOUND);
@@ -45,6 +45,12 @@ UserSchema.statics = {
             });
     },
 
+    /**
+     * Find user account by email address
+     *
+     * @param {*} email
+     * @returns
+     */
     findByEmail(email) {
         return this.find({email})
             .exec()
@@ -63,21 +69,23 @@ UserSchema.statics = {
     },
 
     /**
-     * Will return a paged list of users
+     * This method will return a list of users that according to searchTermQuery values.
+     * The result set is paged and includes the total result count.
      *
-     * @param {*} [{ itemsPerPage = 25, pageNumber = 0 }={}]
-     * @returns { totalCount: number, data: []}
+     * @param {*} [{ itemsPerPage = 25, pageNumber = 0, sort = { lastName: 1 }, searchTermQuery = {} }={}]
+     * @returns
      */
-    list({ itemsPerPage = 25, pageNumber = 0 } = {}) {
-		return this.find()
-			.sort({ createDate: -1 })
+    list({ itemsPerPage = 25, pageNumber = 0, sort = { lastName: 1 }, searchTermQuery = {} } = {}) {
+        return this.find(searchTermQuery)
+            .collation({ locale: "en" })
+			.sort(sort)
 			.skip(+itemsPerPage * +pageNumber)
 			.limit(+itemsPerPage)
 			.then(users => {
                 if (users.length === 0) {
                     return JSON.stringify({ totalCount: 0, data: []});
                 } else {
-                    return this.count()
+                    return this.countDocuments(searchTermQuery)
                         .then(totalCount => {
                             return JSON.stringify({ totalCount: totalCount, data: users});
                         });

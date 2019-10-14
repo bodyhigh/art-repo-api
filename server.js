@@ -11,7 +11,9 @@ const options = {
     pass: config.mongo.pass,
     useNewUrlParser: true,
     keepAlive: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
 };
 
 mongoose.Promise = Promise;
