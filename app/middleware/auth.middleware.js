@@ -5,9 +5,9 @@ import util from 'util';
 const { body } = require('express-validator/check');
 
 exports.login = (req, res, next) => {
-    console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+    // console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
     next();
-}
+};
 
 exports.adminGuard = (req, res, next) => {
     // console.log('%%%%%%%%%%%%%%%%%%%%%%%%%', util.inspect(req.identity, {colors: true}));
