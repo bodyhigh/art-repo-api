@@ -1,4 +1,4 @@
-import Promise from 'bluebird';
+// import Promise from 'bluebird';
 import mongoose from 'mongoose';
 import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
@@ -91,7 +91,12 @@ UserSchema.statics = {
                         });
                 }
             });
-    }
+    },
+
+    // save(user) {
+    //     return user.save();
+    // }
+    // updateUserProfile(userData)
 };
 
 export default mongoose.model('User', UserSchema);

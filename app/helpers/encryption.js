@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 const bcrypt = Promise.promisifyAll(require('bcrypt'));
+// import bcypt from 'bcrypt';
 import config from '../../config/config';
 
 function hashStringAsync(unhashedString) {

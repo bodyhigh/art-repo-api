@@ -52,15 +52,6 @@ function list(req, res, next) {
 			item[field] = { $regex : new RegExp(searchTerm, "i")};
 			return item;
 		})};
-		
-		// // Option 2
-		// const searchTermRegEx = { $regex : new RegExp(searchTerm, "i")};
-		// searchTermQuery = { $or: [
-		// 	{ firstName: searchTermRegEx },
-		// 	{ lastName: searchTermRegEx },
-		// 	{ email: searchTermRegEx },
-		// 	{ accountStatus: searchTermRegEx }
-		// ]};
 	}
 
 	User.list({ itemsPerPage, pageNumber, sort, searchTermQuery })
@@ -68,4 +59,22 @@ function list(req, res, next) {
 		.catch(e => next(e));
 }
 
-export default { load, get, list };
+function patch(req, res, next) {
+	const keys = Object.keys(req.body);
+
+	for (let i = 0; i < keys.length; i++) {
+		if (keys[i] == 'id') continue; // Don't update the id
+		if (req.body[keys[i]] === req.user[keys[i]]) continue;  // primitive checking for updated value
+		
+		req.user[keys[i]] = req.body[keys[i]];
+	}
+	
+	req.user.save()
+		.then((foo) => {
+			console.log(foo);
+			res.json(foo);
+		})
+		.catch((e) => next(d));
+}
+
+export default { load, get, list, patch };
