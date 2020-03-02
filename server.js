@@ -2,7 +2,7 @@ import config from './config/config';
 import app from './config/express';
 import mongoose from 'mongoose';
 
-Promise = require('bluebird');
+// Promise = require('bluebird');
 
 // MONGOOSE
 const mongoUri = config.mongo.host;
