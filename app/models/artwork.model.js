@@ -19,10 +19,10 @@ const ArtworkSchema = new mongoose.Schema({
     status: { type: String },
 	images: { type: [ArtworkImageSchema]},
 	dimension: {
-        height: { type: Number, required: true },
-        width: { type: Number, required: true },
+        height: { type: Number, required: false },
+        width: { type: Number, required: false },
         depth: { type: Number, required: false },
-        unit: { type: String, required: true }
+        unit: { type: String, required: false }
     },
 });
 
