@@ -8,6 +8,7 @@ import User from '../../app/models/user.model';
 import Artwork from '../../app/models/artwork.model';
 import { sampleFullUser } from '../sample-data/user.sample';
 import util, { log } from 'util';
+import mongoose from 'mongoose';
 
 var token = jwtHelper.createToken(sampleFullUser);
 var seededUser;
@@ -32,8 +33,8 @@ describe('## ROUTE/ARTWORK ##', function() {
     describe('POST: /api/artwork', function() {
         it('Should pass if not missing required fields', done => {
             const newArtwork = {
-                name: 'Artwork Title 1',
-                artistId: `${seededUser._id}`
+                title: 'Artwork Title 1',
+                artistId: mongoose.Types.ObjectId()
             };
 
             //TODO: We should have access to the current user's id to pass as the artistid
@@ -46,8 +47,8 @@ describe('## ROUTE/ARTWORK ##', function() {
                 .then((res) => {
                     let insertedArtwork = res.body;
                     // console.log(util.inspect(insertedArtwork, { colors: true }));
-                    expect(res.body.name).to.equal(insertedArtwork.name);
-                    expect(res.body.artistId).to.equal(insertedArtwork.artistId);
+                    expect(res.body.title).to.equal(insertedArtwork.title);
+                    // expect(res.body.artistId).to.equal(insertedArtwork.artistId);
                     done();
                 })
                 .catch(done);

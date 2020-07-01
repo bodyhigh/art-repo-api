@@ -7,7 +7,7 @@ describe('## MODEL/ARTWORK ##', function() {
     describe('Field Validation', function() {
         it('Should Pass if not missing required fields', function(done) {
             const newArtwork = new Artwork({
-                name: 'some name',
+                title: 'some name',
                 description: 'some description',
                 artistId: mongoose.Types.ObjectId()
             });
@@ -23,7 +23,7 @@ describe('## MODEL/ARTWORK ##', function() {
                 // console.log(util.inspect(err.errors, {colors: true }));
                 // console.log('---------------------------------------------');
 
-                expect(err.errors.name.kind).to.be.equal('required');
+                expect(err.errors.title.kind).to.be.equal('required');
                 // expect(err.errors.description.kind).to.be.equal('required');
                 expect(err.errors.artistId.kind).to.be.equal('required');
                 done();

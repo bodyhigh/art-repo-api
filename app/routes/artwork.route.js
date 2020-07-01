@@ -7,12 +7,7 @@ const router = express.Router();
 
 router.route('/')
     .post([
-        body('name')
-            .not().isEmpty()
-            .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
-            .trim()
-            .escape(),
-        body('artistId')
+        body('title')
             .not().isEmpty()
             .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
             .trim()

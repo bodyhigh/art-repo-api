@@ -8,15 +8,15 @@ import util from 'util';
 
 function post(req, res, next) {
     const artworkRecord = new Artwork({
-        name: req.body.name,
+        title: req.body.title,
         description: req.body.description,
-        artistId: req.body.artistId
+        artistId: req.identity.id
     });
-    // console.log(util.inspect(req.identity, { colors: true }));
 
     artworkRecord.save()
         .then((savedArtworkRecord) => res.json(savedArtworkRecord))
         .catch((e) => {
+            // console.log(util.inspect(e, { colors: true }));
             // Duplicate Key Found
             if (e.code === mongoErrorCodes.DUPLICATE_KEY_ERROR) {						
                 next(new APIError(e.errmsg, 

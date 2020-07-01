@@ -10,7 +10,7 @@ const ArtworkImageSchema = new mongoose.Schema({
 });
 
 const ArtworkSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    title: { type: String, required: true },
     description: { type: String },
     artistId: { type: mongoose.Types.ObjectId, required: true },
     dateCompleted: { type: Date },
