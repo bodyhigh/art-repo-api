@@ -54,6 +54,16 @@ ArtworkSchema.statics = {
 			});
 	},
 
+	GetAllByArtistId(artistId) {
+		return this.find({ artistId })
+			.collation({ locale: "en" })
+			.sort({ title: 1 })
+			.then((results) => {
+				return results;
+			});
+			
+	},
+
 	listByArtistId({ artistId = 0, page = 0, limit = 20 } = {}) {
 		const skip = +page * +limit;
 

@@ -7,11 +7,13 @@ import app from '../../server'
 import User from '../../app/models/user.model';
 import Artwork from '../../app/models/artwork.model';
 import { sampleFullUser } from '../sample-data/user.sample';
+import { sampleArtwork } from '../sample-data/artwork.sample';
 import util, { log } from 'util';
 import mongoose from 'mongoose';
 
-var token = jwtHelper.createToken(sampleFullUser);
+var token;
 var seededUser;
+var seededArtwork;
 
 describe('## ROUTE/ARTWORK ##', function() {
     before(function(done) {        
@@ -22,8 +24,23 @@ describe('## ROUTE/ARTWORK ##', function() {
                     User.create(sampleFullUser)
                         .then((results) => {
                             seededUser = results;
-                            done();
-                        });
+                            token = jwtHelper.createToken(seededUser);
+
+                            //Add Artwork
+                            const newArtwork = [];
+                            sampleArtwork.forEach(artItem => {
+                                newArtwork.push({...artItem, ...{artistId: seededUser.id}});
+                            });
+                            
+                            Artwork.create(newArtwork)
+                                .then((results) => {
+                                    // console.log(util.inspect(results, { colors: true}));
+                                    seededArtwork = results;
+                                    done();
+                                })
+                                .catch(done);
+                        })
+                        .catch(done);
                 })
                 .catch(done);
             })
@@ -31,13 +48,41 @@ describe('## ROUTE/ARTWORK ##', function() {
     });
 
     describe('POST: /api/artwork', function() {
-        it('Should pass if not missing required fields', done => {
-            const newArtwork = {
-                title: 'Artwork Title 1',
-                artistId: mongoose.Types.ObjectId()
-            };
+        it('Should fail if no JWT token is found', done => {
+            const newArtwork = {};
 
-            //TODO: We should have access to the current user's id to pass as the artistid
+            request(app)
+                .post('/api/artwork')
+                .send(newArtwork)
+                .expect(httpStatus.UNAUTHORIZED)
+                .then((res) => {
+                    expect(res.body.errors[0].errorCode).to.be.equal('CREDENTIALS_REQUIRED');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should fail route validation if missing required fields', done => {
+            const newArtwork = {};
+
+            request(app)
+                .post('/api/artwork')
+                .set('Authorization', `bearer ${token}`)
+                .send(newArtwork)
+                .expect(httpStatus.BAD_REQUEST)
+                .then((res) => {
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('title');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should pass if data is valid', done => {
+            const newArtwork = { 
+                title: 'The Scream',
+                description: 'a composition created by Norwegian Expressionist artist Edvard Munch in 1893'
+            };
 
             request(app)
                 .post('/api/artwork')
@@ -45,13 +90,24 @@ describe('## ROUTE/ARTWORK ##', function() {
                 .send(newArtwork)
                 .expect(httpStatus.OK)
                 .then((res) => {
-                    let insertedArtwork = res.body;
-                    // console.log(util.inspect(insertedArtwork, { colors: true }));
-                    expect(res.body.title).to.equal(insertedArtwork.title);
-                    // expect(res.body.artistId).to.equal(insertedArtwork.artistId);
+                    expect(res.body.title).to.be.equal(newArtwork.title);
                     done();
                 })
                 .catch(done);
+        });
+    });
+
+    describe('GET: /api/artwork', function() {
+        it('Should return all artwork for the current logged in artist', (done) => {
+            request(app)
+                .get('/api/artwork')
+                .set('Authorization', `bearer ${token}`)
+                .expect(httpStatus.OK)
+                .then((res) => {
+                    expect(res.body.length).to.be.equal(5); //4 from seeded + 1 from 'POST' unit test
+                    done();
+                })
+                .catch(done);            
         });
     });
 });

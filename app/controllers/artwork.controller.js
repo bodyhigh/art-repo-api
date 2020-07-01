@@ -29,4 +29,10 @@ function post(req, res, next) {
         });
 }
 
-export default { post };
+function GetAllByArtistId(req, res, next) {
+    Artwork.GetAllByArtistId(req.identity.id)
+        .then((result) => res.json(result))
+        .catch(e => next(e));
+}
+
+export default { post, GetAllByArtistId };

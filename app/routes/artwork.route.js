@@ -12,6 +12,8 @@ router.route('/')
             .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
             .trim()
             .escape(),
-    ], reqResultsHandler, artworkController.post);
+    ], reqResultsHandler, artworkController.post)
+
+    .get(artworkController.GetAllByArtistId);
 
 export default router;

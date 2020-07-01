@@ -24,7 +24,6 @@ describe('## MODEL/ARTWORK ##', function() {
                 // console.log('---------------------------------------------');
 
                 expect(err.errors.title.kind).to.be.equal('required');
-                // expect(err.errors.description.kind).to.be.equal('required');
                 expect(err.errors.artistId.kind).to.be.equal('required');
                 done();
             });

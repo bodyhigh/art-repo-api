@@ -100,7 +100,7 @@ describe('## MODEL/USER ##', function()  {
             newUser.validate((err) => {
                 // artwork
                 expect(err.errors['artwork.0.artworkId'].kind).to.be.equal('required');
-                expect(err.errors['artwork.0.name'].kind).to.be.equal('required');
+                expect(err.errors['artwork.0.title'].kind).to.be.equal('required');
                 expect(err.errors['artwork.0.description'].kind).to.be.equal('required');
 
                 // artworkRefs
