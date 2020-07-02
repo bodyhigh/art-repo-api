@@ -14,6 +14,10 @@ router.route('/')
             .escape(),
     ], reqResultsHandler, artworkController.post)
 
+    //TODO: make sure identity is set
     .get(artworkController.GetAllByArtistId);
+
+router.route('/:id')
+    .get(artworkController.GetById);
 
 export default router;

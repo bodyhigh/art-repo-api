@@ -110,4 +110,30 @@ describe('## ROUTE/ARTWORK ##', function() {
                 .catch(done);            
         });
     });
+
+    describe('GET: /api/artowrk/:id', () => {
+        it('Should validate that a token is present containing a JWT token', (done) => {
+            // console.log(util.inspect(results, { colors: true}));
+            request(app)
+                .get(`/api/artwork/${seededArtwork[0].id}`)
+                .expect(httpStatus.UNAUTHORIZED)
+                .then((res) => {
+                    expect(res.body.errors[0].errorCode).to.be.equal('CREDENTIALS_REQUIRED');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should return a record given a valid id', (done) => {
+            request(app)
+            .get(`/api/artwork/${seededArtwork[0].id}`)
+            .set('Authorization', `bearer ${token}`)
+            .expect(httpStatus.OK)
+            .then((res) => {
+                expect(res.body.title).to.be.equal(seededArtwork[0].title);
+                done();
+            })
+            .catch(done);
+        });
+    });
 });

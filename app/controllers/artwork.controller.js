@@ -35,4 +35,13 @@ function GetAllByArtistId(req, res, next) {
         .catch(e => next(e));
 }
 
-export default { post, GetAllByArtistId };
+function GetById(req, res, next) {
+    const id = req.params.id;
+    // console.log(util.inspect(req.params, { colors: true }));
+    // console.log(`!!!!!!!!!!!!!!!!!!!!!!!! ID: ${id}`);
+    Artwork.get(id)
+        .then((result) => res.json(result))
+        .catch(e => next(e));
+}
+
+export default { post, GetAllByArtistId, GetById };
