@@ -73,7 +73,6 @@ function patch(req, res, next) {
 	
 	req.user.save()
 		.then((foo) => {
-			console.log(foo);
 			res.json(foo);
 		})
 		.catch((e) => next(d));

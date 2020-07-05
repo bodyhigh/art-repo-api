@@ -55,7 +55,8 @@ app.use((err, req, res, next) => {
 	} else if (!hasinstanceOf(err, APIError)) {
 		return next(new APIError(err.message, err.status, err.isPublic));
 	}
-	
+	// console.log('########## ERROR HANDLING ##########')
+	// console.log(util.inspect(err, { colors: true }));
 	return next(err);
 });
 

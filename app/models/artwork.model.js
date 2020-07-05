@@ -36,32 +36,23 @@ ArtworkSchema.statics = {
 					return item;
 				}
 
-				const err = new APIError('Art Item Not Found.', httpStatus.NOT_FOUND);
+				const err = new APIError('Artwork Item Not Found.', httpStatus.NOT_FOUND);
 				return Promise.reject(err);
 			});
 	},
 
 	findByArtistId(artistId) {
-		return this.find({ artistId })
+		return this.find({ artistId: artistId })
+			.collation({ locale: "en" })
+			.sort({ title: 1 })
 			.exec()
 			.then((artItems) => {
 				if (artItems) {
 					return artItems;
 				}
-
-				const err = new APIError('Art Items Not Found.', httpStatus.NOT_FOUND);
+				const err = new APIError('Artwork Items Not Found.', httpStatus.NOT_FOUND);
 				return Promise.reject(err);
 			});
-	},
-
-	GetAllByArtistId(artistId) {
-		return this.find({ artistId })
-			.collation({ locale: "en" })
-			.sort({ title: 1 })
-			.then((results) => {
-				return results;
-			});
-			
 	},
 
 	listByArtistId({ artistId = 0, page = 0, limit = 20 } = {}) {

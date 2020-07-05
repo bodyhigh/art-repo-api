@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export const sampleArtwork = [
     {
         title: 'Art 1',
-        description: 'This is a description for Art 1.',
+        description: 'This is a description for Art 1. &lt;div&gt;abc&lt;/div&gt;',
         images: [
             {
                 url: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png',
@@ -14,7 +14,7 @@ export const sampleArtwork = [
     },
     {
         title: 'Art 2',
-        description: 'This is a description for Art 2.',
+        description: 'This is a description for Art 2.&lt;script&gt;alert(&#x27;As the Canadians say&#x27;);&lt;&#x2F;script&gt;',
         images: [
             {
                 url: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png',
@@ -31,7 +31,7 @@ export const sampleArtwork = [
         ]
     },
     {
-        title: 'Art 3',
+        title: 'Art 3: Dog&#x27;s Playing Poker',
         description: 'This is a description for Art 3.',
         images: [
             {

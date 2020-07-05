@@ -9,7 +9,6 @@ import Artwork from '../../app/models/artwork.model';
 import { sampleFullUser } from '../sample-data/user.sample';
 import { sampleArtwork } from '../sample-data/artwork.sample';
 import util, { log } from 'util';
-import mongoose from 'mongoose';
 
 var token;
 var seededUser;
@@ -29,7 +28,7 @@ describe('## ROUTE/ARTWORK ##', function() {
                             //Add Artwork
                             const newArtwork = [];
                             sampleArtwork.forEach(artItem => {
-                                newArtwork.push({...artItem, ...{artistId: seededUser.id}});
+                                newArtwork.push({...artItem, ...{ artistId: seededUser.id }});
                             });
                             
                             Artwork.create(newArtwork)
@@ -80,8 +79,8 @@ describe('## ROUTE/ARTWORK ##', function() {
 
         it('Should pass if data is valid', done => {
             const newArtwork = { 
-                title: 'The Scream',
-                description: 'a composition created by Norwegian Expressionist artist Edvard Munch in 1893'
+                title: "Munch's The Scream",
+                description: "a composition created by Norwegian Expressionist artist Edvard Munch in 1893 <script>alert('boo');</script>"
             };
 
             request(app)
@@ -91,6 +90,7 @@ describe('## ROUTE/ARTWORK ##', function() {
                 .expect(httpStatus.OK)
                 .then((res) => {
                     expect(res.body.title).to.be.equal(newArtwork.title);
+                    expect(res.body.description).to.be.equal(newArtwork.description);
                     done();
                 })
                 .catch(done);
@@ -111,7 +111,7 @@ describe('## ROUTE/ARTWORK ##', function() {
         });
     });
 
-    describe('GET: /api/artowrk/:id', () => {
+    describe('GET: /api/artwork/:id', () => {
         it('Should validate that a token is present containing a JWT token', (done) => {
             // console.log(util.inspect(results, { colors: true}));
             request(app)
@@ -136,4 +136,72 @@ describe('## ROUTE/ARTWORK ##', function() {
             .catch(done);
         });
     });
+
+    describe('PATCH: /api/artwork/:id', () => {
+        it('Should fail route validation if required fields are missing', (done) => {
+            const updatedRecord = {
+                id: seededArtwork[0].id,
+                // Missing Title
+                description: 'Updated Description'
+            };
+
+            request(app)
+                .patch(`/api/artwork/${seededArtwork[0].id}`)
+                .set('Authorization', `bearer ${token}`)
+                .send(updatedRecord)
+                .expect(httpStatus.BAD_REQUEST)
+                .then((res) => {
+                    // console.log(util.inspect(res.body.errors, { colors: true}));
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+                    expect(res.body.errors[1].param).to.be.equal('title');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should fail route validation if fields do not meet min length requirements', (done) => {
+            const updatedRecord = seededArtwork[0];
+            updatedRecord.title = 'HI';
+            updatedRecord.description = 'BE';
+
+            request(app)
+                .patch(`/api/artwork/${seededArtwork[0].id}`)
+                .set('Authorization', `bearer ${token}`)
+                .send(updatedRecord)
+                .expect(httpStatus.BAD_REQUEST)
+                .then((res) => {
+                    expect(res.body.errors.length).to.be.equal(3);
+                    expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
+
+                    expect(res.body.errors[1].param).to.be.equal('title');
+                    expect(res.body.errors[1].msg).to.be.equal('must be at least 3 chars long');
+
+                    expect(res.body.errors[2].param).to.be.equal('description');
+                    expect(res.body.errors[2].msg).to.be.equal('must be at least 3 chars long');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('Should successfully update a record', (done) => {
+            const updatedRecord = seededArtwork[0];
+            updatedRecord.title = 'Updated Title';
+            updatedRecord.description = 'Updated Description. <script>alert("GOTCHA");</script>';
+
+            request(app)
+                .patch(`/api/artwork/${seededArtwork[0].id}`)
+                .set('Authorization', `bearer ${token}`)
+                .send(updatedRecord)
+                // .expect(httpStatus.OK)   
+                .then((res) => {
+                    // console.log(util.inspect(res.body, { colors: true}));
+                    expect(res.body._id).to.be.equal(updatedRecord.id);
+                    expect(res.body.title).to.be.equal(updatedRecord.title);
+                    expect(res.body.description).to.be.equal(updatedRecord.description);
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
 });

@@ -1,6 +1,7 @@
 import express from 'express';
 import { reqResultsHandler } from '../middleware/requestValidation.middleware';
 import artworkController from '../controllers/artwork.controller';
+import util from 'util';
 
 const { check, body } = require('express-validator/check');
 const router = express.Router();
@@ -10,14 +11,24 @@ router.route('/')
         body('title')
             .not().isEmpty()
             .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
+            .trim(),
+        body('description')
+            .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
             .trim()
-            .escape(),
     ], reqResultsHandler, artworkController.post)
 
-    //TODO: make sure identity is set
-    .get(artworkController.GetAllByArtistId);
+    .get(artworkController.findByArtistId);
 
 router.route('/:id')
-    .get(artworkController.GetById);
+    .get(artworkController.findById)
+    .patch([
+        body('title')
+            .not().isEmpty()
+            .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
+            .trim(),
+        body('description')
+            .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
+            .trim()
+    ], reqResultsHandler, artworkController.patch);
 
 export default router;
