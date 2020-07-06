@@ -1,4 +1,4 @@
-// import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import request from 'supertest-as-promised';
 import { expect } from 'chai';
 import httpStatus from 'http-status';
@@ -9,6 +9,7 @@ import Artwork from '../../app/models/artwork.model';
 import { sampleFullUser } from '../sample-data/user.sample';
 import { sampleArtwork } from '../sample-data/artwork.sample';
 import util, { log } from 'util';
+import { Mongoose } from 'mongoose';
 
 var token;
 var seededUser;
@@ -192,7 +193,7 @@ describe('## ROUTE/ARTWORK ##', function() {
                 .patch(`/api/artwork/${seededArtwork[0].id}`)
                 .set('Authorization', `bearer ${token}`)
                 .send(updatedRecord)
-                // .expect(httpStatus.OK)   
+                .expect(httpStatus.OK)   
                 .then((res) => {
                     // console.log(util.inspect(res.body, { colors: true}));
                     expect(res.body._id).to.be.equal(updatedRecord.id);
@@ -201,6 +202,53 @@ describe('## ROUTE/ARTWORK ##', function() {
                     done();
                 })
                 .catch(done);
+        });
+    });
+
+    describe('Delete: /api/artwork/:id', () => {
+        it('Should fail [LoadAndValidateOwnership] middleware if current user is not the artwork owner', (done) => {
+            const newRecord = new Artwork({
+                title: 'Delete Me',
+                description: 'Delete this record',
+                artistId: mongoose.Types.ObjectId()
+            });
+
+            newRecord.save()
+                .then(testRecord => {
+                    request(app)
+                        .delete(`/api/artwork/${testRecord._id}`)
+                        .set('Authorization', `bearer ${token}`)
+                        .expect(httpStatus.UNAUTHORIZED)
+                        .then(result => {
+                            done();
+                        }).catch(done);
+                }).catch(done);
+        });
+
+        it('Should successfully delete a record', (done) => {
+            const newRecord = new Artwork({
+                title: 'Delete Me 2',
+                description: 'Delete this record 2',
+                artistId: seededUser.id
+            });
+
+            newRecord.save()
+                .then(testRecord => {
+                    // console.log(util.inspect(testRecord, { colors: true}));
+                    request(app)
+                        .delete(`/api/artwork/${testRecord._id}`)
+                        .set('Authorization', `bearer ${token}`)
+                        .expect(httpStatus.OK)
+                        .then(result => {
+                            // console.log(util.inspect(result.res.text, { colors: true}));
+                            done();
+                        })
+                        .catch(err => {
+                            console.log(util.inspect(err, { colors: true }));
+                            done(err);
+                        });
+                        //.catch(done);
+                }).catch(done);
         });
     });
 

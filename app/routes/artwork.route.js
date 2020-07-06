@@ -1,5 +1,6 @@
 import express from 'express';
 import { reqResultsHandler } from '../middleware/requestValidation.middleware';
+import { LoadAndValidateOwnership } from '../middleware/artwork.middleware';
 import artworkController from '../controllers/artwork.controller';
 import util from 'util';
 
@@ -21,6 +22,7 @@ router.route('/')
 
 router.route('/:id')
     .get(artworkController.findById)
+    .delete(LoadAndValidateOwnership, artworkController.deleteRecord)
     .patch([
         body('title')
             .not().isEmpty()

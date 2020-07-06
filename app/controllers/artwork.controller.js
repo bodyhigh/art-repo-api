@@ -73,9 +73,18 @@ function patch(req, res, next) {
         }).catch(e => next(e));
 }
 
+function deleteRecord(req, res, next) {
+    Artwork.findByIdAndDelete(req.body.artwork.id)
+        .then(result => {
+            // res.sendStatus(200);
+            res.json({success: true});
+        }).catch(e => next(e));
+}
+
 export default { 
     post, 
     findByArtistId, 
     findById,
-    patch
+    patch,
+    deleteRecord
 };
