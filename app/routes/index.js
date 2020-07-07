@@ -22,8 +22,8 @@ const unlessPaths = ['/api/auth/login',
 ];
 
 router.use(
-	expressJwt({ secret: config.jwtSecret, requestProperty: 'identity' })
-		.unless({ path: unlessPaths })
+	expressJwt({ secret: config.jwtSecret, requestProperty: 'identity', algorithms: ['HS256'] })
+		.unless({ path: unlessPaths })	
 );
 
 // Handle token errors here
