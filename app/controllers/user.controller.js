@@ -2,6 +2,7 @@
 import httpStatus from 'http-status';
 import User from '../models/user.model';
 import APIError from '../helpers/APIError';
+import util from 'util';
 
 /**
  * Loads a single user record (by id) into req.user
@@ -40,6 +41,7 @@ function get(req, res, next) {
  * @param {any} next 
  */
 function list(req, res, next) {
+	// console.log(util.inspect(req.identity, { colors: true }));
 	const { itemsPerPage, pageNumber, sortFieldName, sortDirection, searchTerm } = req.query;
 	const sort = {};
 	sort[sortFieldName] = sortDirection === "asc" ? 1 : -1;
@@ -71,7 +73,6 @@ function patch(req, res, next) {
 	
 	req.user.save()
 		.then((foo) => {
-			console.log(foo);
 			res.json(foo);
 		})
 		.catch((e) => next(d));

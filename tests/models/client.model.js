@@ -79,7 +79,7 @@ describe('## MODEL/CLIENT ##', function()  {
 
             newClient.validate((err) => {
                 expect(err.errors['artwork.0.artworkId'].name).to.be.equal('ValidatorError');
-                expect(err.errors['artwork.0.name'].name).to.be.equal('ValidatorError');
+                expect(err.errors['artwork.0.title'].name).to.be.equal('ValidatorError');
                 expect(err.errors['artwork.0.description'].name).to.be.equal('ValidatorError');              
                 done();
             });
@@ -88,7 +88,7 @@ describe('## MODEL/CLIENT ##', function()  {
         it('[ArtworkBasicRef] - Should validate ArtworkBasicRef', function(done)  {
             const newArtworkBasicRef = new ArtworkBasicRef({
                 artworkId: mongoose.Types.ObjectId(),
-                name: 'Art 1',
+                title: 'Art 1',
                 description: 'This is a description for Art 1.',
                 photoUrl: 'https://s3-us-west-2.amazonaws.com/testbucket-artchive-com/600-400.png'
             });

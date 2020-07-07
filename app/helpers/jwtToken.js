@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import config from '../../config/config';
+import util from 'util';
 
 function createToken(user) {
 	const payload = {
 		id: user._id,
-		// username: user.username,
 		email: user.email,
 		firstName: user.firstName,
 		lastName: user.lastName,

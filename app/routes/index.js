@@ -11,7 +11,7 @@ import util from 'util';
 
 import authRoutes from './auth.route';
 import userRoutes from './user.route';
-// import artRoutes from './art.route';
+import artworkRoutes from './artwork.route';
 
 const router = express.Router();
 
@@ -22,8 +22,8 @@ const unlessPaths = ['/api/auth/login',
 ];
 
 router.use(
-	expressJwt({ secret: config.jwtSecret, requestProperty: 'identity' })
-		.unless({ path: unlessPaths })
+	expressJwt({ secret: config.jwtSecret, requestProperty: 'identity', algorithms: ['HS256'] })
+		.unless({ path: unlessPaths })	
 );
 
 // Handle token errors here
@@ -44,6 +44,6 @@ router.get('/health-check', authMiddleware.adminGuard, (req, res, next) => {
 
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
-// router.use('/art', artRoutes);
+router.use('/artwork', artworkRoutes);
 
 export default router;

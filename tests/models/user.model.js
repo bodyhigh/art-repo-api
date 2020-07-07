@@ -80,8 +80,9 @@ describe('## MODEL/USER ##', function()  {
                 // clientRefs
                 expect(err.errors.clientRefs.name).to.be.equal('CastError');
 
-                // # of errors
-                expect(Object.keys(err.errors).length).to.be.equal(4);
+                // // # of errors
+                // console.log(util.inspect(err.errors, { colors: true }));
+                // expect(Object.keys(err.errors).length).to.be.equal(4);
                 done();
             });
         });
@@ -100,7 +101,7 @@ describe('## MODEL/USER ##', function()  {
             newUser.validate((err) => {
                 // artwork
                 expect(err.errors['artwork.0.artworkId'].kind).to.be.equal('required');
-                expect(err.errors['artwork.0.name'].kind).to.be.equal('required');
+                expect(err.errors['artwork.0.title'].kind).to.be.equal('required');
                 expect(err.errors['artwork.0.description'].kind).to.be.equal('required');
 
                 // artworkRefs

@@ -10,6 +10,11 @@ export default {
         description: 'Invalid login credentials'
     },
 
+    INVALID_OWNERSHIP: {
+        errorCode: 'INVALID_OWNERSHIP',
+        description: 'Invalid ownership of the requested record'
+    },
+
     INVALID_REQUEST_PARAMETERS: {
         errorCode: 'INVALID_REQUEST_PARAMETERS',
         description: 'Invalid request parameters'

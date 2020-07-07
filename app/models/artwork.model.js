@@ -10,7 +10,7 @@ const ArtworkImageSchema = new mongoose.Schema({
 });
 
 const ArtworkSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    title: { type: String, required: true },
     description: { type: String },
     artistId: { type: mongoose.Types.ObjectId, required: true },
     dateCompleted: { type: Date },
@@ -19,10 +19,10 @@ const ArtworkSchema = new mongoose.Schema({
     status: { type: String },
 	images: { type: [ArtworkImageSchema]},
 	dimension: {
-        height: { type: Number, required: true },
-        width: { type: Number, required: true },
+        height: { type: Number, required: false },
+        width: { type: Number, required: false },
         depth: { type: Number, required: false },
-        unit: { type: String, required: true }
+        unit: { type: String, required: false }
     },
 });
 
@@ -36,20 +36,21 @@ ArtworkSchema.statics = {
 					return item;
 				}
 
-				const err = new APIError('Art Item Not Found.', httpStatus.NOT_FOUND);
+				const err = new APIError('Artwork Item Not Found.', httpStatus.NOT_FOUND);
 				return Promise.reject(err);
 			});
 	},
 
 	findByArtistId(artistId) {
-		return this.find({ artistId })
+		return this.find({ artistId: artistId })
+			.collation({ locale: "en" })
+			.sort({ title: 1 })
 			.exec()
 			.then((artItems) => {
 				if (artItems) {
 					return artItems;
 				}
-
-				const err = new APIError('Art Items Not Found.', httpStatus.NOT_FOUND);
+				const err = new APIError('Artwork Items Not Found.', httpStatus.NOT_FOUND);
 				return Promise.reject(err);
 			});
 	},
