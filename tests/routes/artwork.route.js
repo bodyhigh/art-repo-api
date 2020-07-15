@@ -105,7 +105,9 @@ describe('## ROUTE/ARTWORK ##', function() {
                 .set('Authorization', `bearer ${token}`)
                 .expect(httpStatus.OK)
                 .then((res) => {
-                    expect(res.body.length).to.be.equal(5); //4 from seeded + 1 from 'POST' unit test
+                    // console.log(util.inspect(res.body, { colors: true }));
+                    expect(res.body.data.length).to.be.equal(5); //4 from seeded + 1 from 'POST' unit test
+                    expect(res.body.totalCount).to.be.equal(5); 
                     done();
                 })
                 .catch(done);            

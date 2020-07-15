@@ -18,7 +18,7 @@ router.route('/')
             .trim()
     ], reqResultsHandler, artworkController.post)
 
-    .get(artworkController.findByArtistId);
+    .get(artworkController.listByArtistId);
 
 router.route('/:id')
     .get(artworkController.findById)

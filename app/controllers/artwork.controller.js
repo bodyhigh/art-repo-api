@@ -45,6 +45,33 @@ function post(req, res, next) {
         });
 }
 
+function listByArtistId(req, res, next) {
+    // console.log(util.inspect(req.query, { colors: true }));
+	const { itemsPerPage, pageNumber, sortFieldName, sortDirection, searchTerm } = req.query;
+	const sort = {};
+    sort[sortFieldName] = sortDirection === "asc" ? 1 : -1;
+
+	let searchTermQuery = {};
+	if (searchTerm) {
+		searchTermQuery = { $or: ["title", "description"].map(field => {
+			const item = {};
+			item[field] = { $regex : new RegExp(searchTerm, "i")};
+			return item;
+		})};
+    }
+
+    searchTermQuery.artistId = req.identity.id;
+    
+    Artwork.listByArtistId({ itemsPerPage, pageNumber, sort, searchTermQuery })
+        .then(result => {
+            var resultJson = JSON.parse(result);
+            resultJson.data = unescapeArray(resultJson.data);
+            // console.log(util.inspect(resultJson, { colors: true }));
+            res.json(resultJson);
+        })
+        .catch(e => next(e));
+}
+
 function findByArtistId(req, res, next) {
     Artwork.findByArtistId(req.identity.id)
         .then((result) => res.json(unescapeArray(result)))
@@ -83,6 +110,7 @@ function deleteRecord(req, res, next) {
 
 export default { 
     post, 
+    listByArtistId,
     findByArtistId, 
     findById,
     patch,

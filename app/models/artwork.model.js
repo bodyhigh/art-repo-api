@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
+import util from 'util';
 
 const ArtworkImageSchema = new mongoose.Schema({
     url: { type: String, required: true },
@@ -41,6 +42,25 @@ ArtworkSchema.statics = {
 			});
 	},
 
+	listByArtistId({ itemsPerPage = 25, pageNumber = 0, sort = { title: 1 }, searchTermQuery = {} } = {}) {
+		// console.log(util.inspect(searchTermQuery, { colors: true }));
+		return this.find(searchTermQuery)
+            .collation({ locale: "en" })
+			.sort(sort)
+			.skip(+itemsPerPage * +pageNumber)
+			.limit(+itemsPerPage)
+			.then(artwork => {
+                if (artwork.length === 0) {
+                    return JSON.stringify({ totalCount: 0, data: []});
+                } else {
+                    return this.countDocuments(searchTermQuery)
+                        .then(totalCount => {
+                            return JSON.stringify({ totalCount: totalCount, data: artwork});
+                        });
+                }
+            });
+	},
+	
 	findByArtistId(artistId) {
 		return this.find({ artistId: artistId })
 			.collation({ locale: "en" })
@@ -54,16 +74,6 @@ ArtworkSchema.statics = {
 				return Promise.reject(err);
 			});
 	},
-
-	listByArtistId({ artistId = 0, page = 0, limit = 20 } = {}) {
-		const skip = +page * +limit;
-
-		return this.find({ artistId })
-			.sort({ title: 1 })
-			.skip(+skip)
-			.limit(+limit)
-			.exec();
-	}
 };
 
 export default mongoose.model('Artwork', ArtworkSchema);
