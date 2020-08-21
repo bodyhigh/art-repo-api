@@ -38,8 +38,12 @@ router.use((err, req, res, next) => {
 	}	
 });
 
-router.get('/health-check', authMiddleware.adminGuard, (req, res, next) => {
-	res.send('OK');
+router.get('/health-check', (req, res, next) => {
+	const payload = {
+		STATUS: 'OK',
+		NODE_ENV: config.env
+	};
+	res.json(payload);
 });
 
 router.use('/auth', authRoutes);
