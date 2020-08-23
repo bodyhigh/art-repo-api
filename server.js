@@ -7,8 +7,8 @@ import mongoose from 'mongoose';
 // MONGOOSE
 const mongoUri = config.mongo.host;
 const options = {
-    user: config.mongo.user,
-    pass: config.mongo.pass,
+    // user: config.mongo.user,
+    // pass: config.mongo.pass,
     useNewUrlParser: true,
     keepAlive: true,
     useUnifiedTopology: true,
