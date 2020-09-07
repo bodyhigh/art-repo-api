@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+# Multer Temp Files
+/tmp
+
 # Runtime data
 pids
 *.pid

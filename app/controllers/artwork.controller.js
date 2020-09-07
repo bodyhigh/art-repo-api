@@ -21,6 +21,8 @@ function unescapeArray(entities) {
 
 // Route Controller Methods
 function post(req, res, next) {
+    console.log(util.inspect(req.body, { colors: true}));
+    console.log(util.inspect(req.file, { colors: true}));
     let artworkRecord = new Artwork({
         title: req.body.title,
         description: req.body.description,

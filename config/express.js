@@ -10,6 +10,7 @@ import httpStatus from 'http-status';
 import APIError from '../app/helpers/APIError';
 import { hasinstanceOf } from '../app/helpers/typeHelper'; 
 import util from 'util';
+// const formidable = require('express-formidable');
 
 import routes from './../app/routes/';
 
@@ -21,6 +22,7 @@ if (config.env === 'development') {
 
 app.use(helmet());
 app.use(cors());
+// app.use(formidable());
 
 // enable detailed API logging in dev env
 if (config.env === 'development') {
