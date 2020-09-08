@@ -16,6 +16,10 @@ function ConfigureS3() {
     return new AWS.S3();
 }
 
+async function SetupUserFolderAsync(folderName) {
+    return await SetupUserFolder(folderName); 
+}
+
 function SetupUserFolder(folderName) {
     return new Promise((resolve, reject) => {
         const s3 = ConfigureS3();
@@ -47,13 +51,13 @@ function SetupUserFolder(folderName) {
     });
 }
 
-function UploadToUserFolder(userId, files) {
-    return new Promise((resolve, reject) => {
+function UploadToUserFolder(userId, file) {
+    // return new Promise((resolve, reject) => {
         const s3 = ConfigureS3();
-        const uriFileName = encodeURIComponent(files.uploadFile.name);
+        const uriFileName = encodeURIComponent(file.filename);
         const uriUserId = encodeURIComponent(userId);
         const userFolderPhotoKey = uriUserId + '//' + uriFileName;
-        const filedata = fs.createReadStream(files.uploadFile.path);
+        const filedata = fs.createReadStream(file.path);
     
         var params = {
             Key: userFolderPhotoKey,
@@ -62,16 +66,18 @@ function UploadToUserFolder(userId, files) {
             ACL: 'public-read'
         };
     
-        s3.upload(params)
-        // .on('httpUploadProgress', (evt) => console.log(evt))
-        .send(function(err, data) {
-            if (err) {
-                return reject(err);
-            } else {
-                return resolve(data);
-            }
-        });
-    });
+        return s3.upload(params).promise();
+
+        // s3.upload(params)
+        // // .on('httpUploadProgress', (evt) => console.log(evt))
+        // .send(function(err, data) {
+        //     if (err) {
+        //         return reject(err);
+        //     } else {
+        //         return resolve(data);
+        //     }
+        // });
+    // });
 }
 
 function DeleteImagesFromUserFolder(userId, imageKeys) {
@@ -95,4 +101,5 @@ function DeleteImagesFromUserFolder(userId, imageKeys) {
         })
     });
 }
-export default { ConfigureS3, SetupUserFolder, UploadToUserFolder, DeleteImagesFromUserFolder };
+
+export default { ConfigureS3, SetupUserFolderAsync, SetupUserFolder, UploadToUserFolder, DeleteImagesFromUserFolder };
