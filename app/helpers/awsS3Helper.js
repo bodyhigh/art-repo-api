@@ -51,6 +51,10 @@ function SetupUserFolder(folderName) {
     });
 }
 
+// async function UploadToUserFolderAsync(userId, file) {
+//     return UploadToUserFolder(userId, file);
+// }
+
 function UploadToUserFolder(userId, file) {
     // return new Promise((resolve, reject) => {
         const s3 = ConfigureS3();
