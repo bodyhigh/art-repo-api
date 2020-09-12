@@ -18,7 +18,6 @@ function load(req, res, next, id) {
 			return next();
 		})
 		.catch((e) => {
-			//TODO: We should log e.message
 			next(new APIError('User Not Found', httpStatus.NOT_FOUND));
 		});
 }

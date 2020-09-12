@@ -38,7 +38,7 @@ router.use((err, req, res, next) => {
 	}	
 });
 
-router.get('/health-check', (req, res, next) => {
+router.get('/health-check', (req, res) => {
 	const payload = {
 		STATUS: 'OK',
 		NODE_ENV: config.env

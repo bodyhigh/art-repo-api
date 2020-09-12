@@ -6,12 +6,6 @@ import APIError from '../helpers/APIError';
 import errorCodes from '../helpers/errorCodes';
 import mongoErrorCodes from '../helpers/mongoErrorCodes';
 import util from 'util';
-// import { doesNotReject } from 'assert';
-
-//TODO: this should really be a property of the user model
-function isActive(user) {	
-	return user.accountStatus === 'active';
-}
 
 function register(req, res, next) {
 	Encryption.hashStringAsync(req.body.password)
@@ -48,7 +42,7 @@ function login(req, res, next) {
 		if (user !== undefined) {
 			Encryption.compareStringsAsync(req.body.password, user.password)
 				.then((matched) => {
-					if (matched && isActive(user)) {
+					if (matched && (user.accountStatus === 'active')) {
 						res.json({
 							success: true,
 							token: jwtToken.createToken(user),
@@ -83,4 +77,4 @@ function login(req, res, next) {
 	});
 }
 
-export default { isActive, register, login };
+export default { register, login };
