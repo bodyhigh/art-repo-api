@@ -25,6 +25,11 @@ export default {
         description: 'Invalid role permissions'
     },
 
+    MAX_FILE_SIZE_EXCEEDED: {
+        errorCode: 'MAX_FILE_SIZE_EXCEEDED',
+        description: "File exceeds maximum allowed size"
+    },
+
     REGISTER_DUPLICATE_EMAIL: {
         errorCode: 'REGISTER_DUPLICATE_EMAIL',
         description: 'Email address has already been registered'

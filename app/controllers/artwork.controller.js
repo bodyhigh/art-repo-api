@@ -40,7 +40,8 @@ function post(req, res, next) {
     let artworkRecord = new Artwork({
         title: req.body.title,
         description: req.body.description,
-        artistId: req.identity.id
+        artistId: req.identity.id,
+        createDate: Date.now()
     });
 
     uploadImageFile(req).then((fileData) => {

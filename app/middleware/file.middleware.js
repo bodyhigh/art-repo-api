@@ -1,6 +1,7 @@
 import util from 'util';
 import APIError from '../helpers/APIError';
 import httpStatus from 'http-status';
+import errorCodes from '../helpers/errorCodes';
 
 export function checkMaxFileSize(req, res, next) {
     if (!req.file && !req.files) next(); // No files to check
@@ -11,7 +12,10 @@ export function checkMaxFileSize(req, res, next) {
         // console.log(util.inspect(req.file));
         if (req.file.size > MAX_FILE_SIZE) {
             console.error('MAX_FILE_SIZE_EXCEEDED');
-            next(new APIError(`MAX_FILE_SIZE_EXCEEDED: ${MAX_FILE_SIZE}`, httpStatus.BAD_REQUEST, true));
+            next(new APIError(`${errorCodes.MAX_FILE_SIZE_EXCEEDED.description}: 5MB`, 
+                httpStatus.FORBIDDEN, 
+                true, 
+                [errorCodes.MAX_FILE_SIZE_EXCEEDED]));
         } else {
             next();
         }

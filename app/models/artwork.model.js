@@ -24,7 +24,8 @@ const ArtworkSchema = new mongoose.Schema({
         width: { type: Number, required: false },
         depth: { type: Number, required: false },
         unit: { type: String, required: false }
-    },
+	},
+	createDate: { type: Date }
 });
 
 ArtworkSchema.index({ artistId: 1, type: -1 });
@@ -42,7 +43,7 @@ ArtworkSchema.statics = {
 			});
 	},
 
-	listByArtistId({ itemsPerPage = 25, pageNumber = 0, sort = { title: 1 }, searchTermQuery = {} } = {}) {
+	listByArtistId({ itemsPerPage = 25, pageNumber = 0, sort = { createDate: -1 }, searchTermQuery = {} } = {}) {
 		// console.log(util.inspect(searchTermQuery, { colors: true }));
 		return this.find(searchTermQuery)
             .collation({ locale: "en" })
