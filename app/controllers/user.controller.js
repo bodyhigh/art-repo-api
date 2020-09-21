@@ -2,6 +2,7 @@
 import httpStatus from 'http-status';
 import User from '../models/user.model';
 import APIError from '../helpers/APIError';
+import awsS3Helper from '../helpers/awsS3Helper';
 import util from 'util';
 
 /**
@@ -77,4 +78,23 @@ function patch(req, res, next) {
 		.catch((e) => next(d));
 }
 
-export default { load, get, list, patch };
+function myProfile(req, res, next) {
+	awsS3Helper.listUserFolderContents(req.identity.id).then(folderContent => {
+		User.get(req.identity.id)
+			.then(user => {
+				res.json({ user: user, folderContent: folderContent });
+			}).catch(e => next(e));
+		// .catch((e) => {
+		// 	next(new APIError('User Not Found', httpStatus.NOT_FOUND));
+	}).catch(e => next(e));
+}
+
+function getuserFileOverview(req, res, next) {
+	const userId = req.params.id;
+	console.log(userId);
+	awsS3Helper.listUserFolderContents(userId).then(folderContent => {
+		res.json(folderContent);
+	}).catch(e => next(e));
+}
+
+export default { load, get, list, patch, myProfile, getuserFileOverview };

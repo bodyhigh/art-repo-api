@@ -6,12 +6,6 @@ import { reqResultsHandler } from '../middleware/requestValidation.middleware';
 const { check, body } = require('express-validator/check');
 const router = express.Router();
 
-router.route('/')
-    .get(authMiddleware.adminGuard, userController.list);
-
-router.route('/:id')
-    .get(authMiddleware.adminGuard, userController.get);
-
 router.route('/userProfile/:id')
     .patch([
         body('firstName')
@@ -35,6 +29,18 @@ router.route('/userProfile/:id')
             .trim()
             .escape()
     ], authMiddleware.adminGuard, reqResultsHandler, userController.patch);
+
+router.route('/my-profile')
+    .get(userController.myProfile);
+
+router.route('/user-file-overview/:id')
+    .get(authMiddleware.adminGuard, userController.getuserFileOverview)
+
+router.route('/')
+    .get(authMiddleware.adminGuard, userController.list);
+
+router.route('/:id')
+    .get(authMiddleware.adminGuard, userController.get);
 
 /**
  * Load user if id is a parameter

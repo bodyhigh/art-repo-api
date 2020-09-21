@@ -5,7 +5,7 @@ import errorCodes from '../helpers/errorCodes';
 import mongoErrorCodes from '../helpers/mongoErrorCodes';
 import controllerHelper from '../helpers/controllerHelper';
 import awsS3Helper from '../helpers/awsS3Helper';
-import fsHelper from '../helpers/fsHelper';
+// import fsHelper from '../helpers/fsHelper';
 import util from 'util';
 
 // Shortcut methods to controllerHelper functions
@@ -21,32 +21,22 @@ function unescapeArray(entities) {
     return controllerHelper.unescapeEntityArray(entities, controllerHelper.artworkSanitizeFields);
 }
 
-function uploadImageFile(req) {
-    return new Promise((resolve, reject) => {
-        if (!req.file) resolve(undefined);
-
-        awsS3Helper.SetupUserFolder(req.identity.id).then((data) => {
-            awsS3Helper.UploadToUserFolder(req.identity.id, req.file).then((fileData) => {
-                fsHelper.fsUnlink(req.file.path).then(() => {
-                    resolve(fileData);
-                }).catch((err) => reject(err));
-            }).catch((err) => reject(err));
-        }).catch((err) => reject(err));
-    });
-}
-
 // Route Controller Methods
 function post(req, res, next) {
     let artworkRecord = new Artwork({
         title: req.body.title,
         description: req.body.description,
         artistId: req.identity.id,
-        createDate: Date.now()
+        createDate: Date.now(),
+        dateCompleted: req.body.dateCompleted,
+        medium: req.body.medium
     });
 
-    uploadImageFile(req).then((fileData) => {
-        if (fileData) 
+    awsS3Helper.uploadImageFile(req).then((fileData) => {
+        if (fileData) {
+            console.log(util.inspect(fileData, { colors: true}));
             artworkRecord.images = [{ url: fileData.Location, key: fileData.Key, isPrimary: true }];
+        }
 
         artworkRecord = escape(artworkRecord);        
         artworkRecord.save()
@@ -121,10 +111,12 @@ function patch(req, res, next) {
 }
 
 function deleteRecord(req, res, next) {
-    Artwork.findByIdAndDelete(req.body.artwork.id)
-        .then(result => {
-            // res.sendStatus(200);
-            res.json({success: true});
+    awsS3Helper.deleteImagesFromUserFolder(req.body.artwork.images)
+        .then(data => {
+            Artwork.findByIdAndDelete(req.body.artwork.id)
+                .then(() => {
+                    res.json({success: true});
+                }).catch(e => next(e));
         }).catch(e => next(e));
 }
 

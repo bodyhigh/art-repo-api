@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import fs from 'fs'
+import fsHelper from './fsHelper';
 import util from 'util';
 import config from '../../config/config';
 
@@ -51,16 +52,12 @@ function SetupUserFolder(folderName) {
     });
 }
 
-// async function UploadToUserFolderAsync(userId, file) {
-//     return UploadToUserFolder(userId, file);
-// }
-
 function UploadToUserFolder(userId, file) {
-    // return new Promise((resolve, reject) => {
         const s3 = ConfigureS3();
-        const uriFileName = encodeURIComponent(file.filename);
+        const uriFileName = encodeURIComponent(`${file.filename}_${file.originalname}`);
+        // const uriFileName = encodeURIComponent(file.originalname);
         const uriUserId = encodeURIComponent(userId);
-        const userFolderPhotoKey = uriUserId + '//' + uriFileName;
+        const userFolderPhotoKey = uriUserId + '/' + uriFileName;
         const filedata = fs.createReadStream(file.path);
     
         var params = {
@@ -71,25 +68,33 @@ function UploadToUserFolder(userId, file) {
         };
     
         return s3.upload(params).promise();
-
-        // s3.upload(params)
-        // // .on('httpUploadProgress', (evt) => console.log(evt))
-        // .send(function(err, data) {
-        //     if (err) {
-        //         return reject(err);
-        //     } else {
-        //         return resolve(data);
-        //     }
-        // });
-    // });
 }
 
-function DeleteImagesFromUserFolder(userId, imageKeys) {
+function uploadImageFile(req) {
     return new Promise((resolve, reject) => {
-        if (imageKeys.length === 0) resolve();
+        if (!req.file) resolve(undefined);
 
-        var keyList = imageKeys.map(id => { return {Key: id} });
+        SetupUserFolder(req.identity.id).then((data) => {
+            UploadToUserFolder(req.identity.id, req.file).then((fileData) => {
+                fsHelper.fsUnlink(req.file.path).then(() => {
+                    resolve(fileData);
+                }).catch((err) => reject(err));
+            }).catch((err) => reject(err));
+        }).catch((err) => reject(err));
+    });
+}
 
+function deleteImagesFromUserFolder(imageRecords) {
+    return new Promise((resolve, reject) => {
+        console.log(imageRecords.length);
+
+        if (imageRecords.length === 0) return resolve();
+
+        console.log(util.inspect(imageRecords, { colors: true }));
+
+        //TODO: Include some validation so that all keys must include the userid
+        var keyList = imageRecords.map(image => { return {Key: image.key} });
+        
         const s3 = ConfigureS3();
         var params = {
             Bucket: config.aws.s3BucketName,
@@ -100,10 +105,21 @@ function DeleteImagesFromUserFolder(userId, imageKeys) {
 
         s3.deleteObjects(params, function(err, data) {
             if (err) return reject(err);
-
             return resolve(data);
         })
     });
 }
 
-export default { ConfigureS3, SetupUserFolderAsync, SetupUserFolder, UploadToUserFolder, DeleteImagesFromUserFolder };
+function listUserFolderContents(userId) {
+        const s3 = ConfigureS3();
+        const bucketName = config.aws.s3BucketName;
+
+        var params = {
+            Bucket: config.aws.s3BucketName,
+            Prefix: userId
+        };
+
+        return s3.listObjectsV2(params).promise();
+}
+
+export default { ConfigureS3, SetupUserFolderAsync, SetupUserFolder, UploadToUserFolder, uploadImageFile, deleteImagesFromUserFolder, listUserFolderContents };

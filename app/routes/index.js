@@ -28,14 +28,17 @@ router.use(
 
 // Handle token errors here
 router.use((err, req, res, next) => {
+	// console.log(util.inspect(err, { colors: true}));
 	if (err.name === 'UnauthorizedError') {
 		next(new APIError(err.message, 
 			httpStatus.UNAUTHORIZED, 
 			false, 
 			[errorCodes.CREDENTIALS_REQUIRED]));
+	} else if (err)	{
+		next(err);
 	} else {
 		next();
-	}	
+	}
 });
 
 router.get('/health-check', (req, res) => {
