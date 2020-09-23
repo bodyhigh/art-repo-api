@@ -52,16 +52,17 @@ function SetupUserFolder(folderName) {
     });
 }
 
-function UploadToUserFolder(userId, file) {
+function UploadToUserFolder(userId, file, folderName) {
         const s3 = ConfigureS3();
         const uriFileName = encodeURIComponent(`${file.filename}_${file.originalname}`);
         // const uriFileName = encodeURIComponent(file.originalname);
         const uriUserId = encodeURIComponent(userId);
-        const userFolderPhotoKey = uriUserId + '/' + uriFileName;
+        let fileKey = folderName === undefined ? uriUserId : uriUserId + '/' + folderName;
+        fileKey += '/' + uriFileName;
         const filedata = fs.createReadStream(file.path);
     
         var params = {
-            Key: userFolderPhotoKey,
+            Key: fileKey,
             Body: filedata,
             Bucket: config.aws.s3BucketName,
             ACL: 'public-read'
@@ -75,7 +76,7 @@ function uploadImageFile(req) {
         if (!req.file) resolve(undefined);
 
         SetupUserFolder(req.identity.id).then((data) => {
-            UploadToUserFolder(req.identity.id, req.file).then((fileData) => {
+            UploadToUserFolder(req.identity.id, req.file, 'photos').then((fileData) => {
                 fsHelper.fsUnlink(req.file.path).then(() => {
                     resolve(fileData);
                 }).catch((err) => reject(err));
