@@ -6,6 +6,7 @@ import mongoErrorCodes from '../helpers/mongoErrorCodes';
 import controllerHelper from '../helpers/controllerHelper';
 import awsS3Helper from '../helpers/awsS3Helper';
 // import fsHelper from '../helpers/fsHelper';
+import fs from 'fs';
 import util from 'util';
 
 // Shortcut methods to controllerHelper functions
@@ -32,27 +33,31 @@ function post(req, res, next) {
         medium: req.body.medium
     });
 
-    awsS3Helper.uploadImageFile(req).then((fileData) => {
-        if (fileData) {
-            console.log(util.inspect(fileData, { colors: true}));
-            artworkRecord.images = [{ url: fileData.Location, key: fileData.Key, isPrimary: true }];
-        }
+    const file = req.file;
 
-        artworkRecord = escape(artworkRecord);        
-        artworkRecord.save()
-            .then((savedArtworkRecord) => res.json(unescape(savedArtworkRecord)))
-            .catch((e) => {
-                // Duplicate Key Found
-                if (e.code === mongoErrorCodes.DUPLICATE_KEY_ERROR) {						
-                    next(new APIError(e.errmsg, 
-                        httpStatus.INTERNAL_SERVER_ERROR, 
-                        true, 
-                        [errorCodes.REGISTER_DUPLICATE_EMAIL]));
-                } else {
-                    next(e);
-                }
-            }); 
-    }).catch((err) => next(new APIError(err)));
+    awsS3Helper.uploadImagesResized(req.identity.id, file)
+        .then(data => {
+            if (data) {
+                console.log(util.inspect(data, { colors: true}));
+                //TODO: Update schema to hold medRez and thumbnails
+                artworkRecord.images = [{ url: data.hiRezData.Location, key: data.hiRezData.Key, isPrimary: true }];                
+            }
+
+            artworkRecord = escape(artworkRecord);        
+            artworkRecord.save()
+                .then((savedArtworkRecord) => res.json(unescape(savedArtworkRecord)))
+                .catch((e) => {
+                    // Duplicate Key Found
+                    if (e.code === mongoErrorCodes.DUPLICATE_KEY_ERROR) {						
+                        next(new APIError(e.errmsg, 
+                            httpStatus.INTERNAL_SERVER_ERROR, 
+                            true, 
+                            [errorCodes.REGISTER_DUPLICATE_EMAIL]));
+                    } else {
+                        next(e);
+                    }
+                }); 
+        }).catch((err) => next(new APIError(err)));
 }
 
 function listByArtistId(req, res, next) {

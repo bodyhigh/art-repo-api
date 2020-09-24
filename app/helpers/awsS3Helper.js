@@ -3,6 +3,7 @@ import fs from 'fs'
 import fsHelper from './fsHelper';
 import util from 'util';
 import config from '../../config/config';
+import sharp from 'sharp';
 
 function ConfigureS3() {
     // AWS Configuration
@@ -17,72 +18,62 @@ function ConfigureS3() {
     return new AWS.S3();
 }
 
-async function SetupUserFolderAsync(folderName) {
-    return await SetupUserFolder(folderName); 
+function uploadImagePromise(key, buffer) {
+    const s3 = ConfigureS3();
+
+    var params = {
+        Key: key,
+        Body: buffer,
+        Bucket: config.aws.s3BucketName,
+        ACL: 'public-read'
+    };
+
+    return s3.upload(params).promise();
 }
 
-function SetupUserFolder(folderName) {
+function uploadImagesResized(userId, file) {
     return new Promise((resolve, reject) => {
-        const s3 = ConfigureS3();
-        const bucketName = config.aws.s3BucketName;
+        if (!file) resolve(undefined);
+        if (!userId || userId.length == 0) reject('uploadImageFilePromise: userId is empty');
         
-        if (folderName.length === 0) {
-            reject(new Error('folderName cannot be empty'));
-        }
-    
-        var keyFolderName = encodeURIComponent(folderName);
-        
-        s3.headObject({ Key: keyFolderName, Bucket: bucketName }, (err, data) => {
-            if (!err) {
-                // User Folder Already Exists
-                return resolve({ data: data });
-            }
-        
-            if (err.code !== 'NotFound') {
-                return reject(err);
-            }
-    
-            s3.putObject({ Key: keyFolderName, Bucket: bucketName }, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }                
-                return resolve(data);
-            });
-        });
+        userId = encodeURIComponent(userId);
+        let filename = encodeURIComponent(`${file.filename}_${file.originalname}`);
+        let resultData = {};
+        const buffer = fs.createReadStream(file.path);
+        const hiRezImageKey = `${userId}/images/${filename}`;
+        const medRezImageKey = `${userId}/images/med-rez/${filename}`;
+        const thumbImageKey = `${userId}/images/thumb/${filename}`;
+
+        uploadImagePromise(hiRezImageKey, buffer)
+            .then(hiRezData => {
+                resultData.hiRezData = hiRezData;
+                return resizeImage(800, file)
+            })
+            .then(medRezBuffer => {
+                return uploadImagePromise(medRezImageKey, medRezBuffer);
+            })
+            .then(medRezData => {
+                resultData.medRezData = medRezData;
+                return resizeImage(200, buffer);
+            })
+            .then(thumbBuffer => {
+                return uploadImagePromise(thumbImageKey, thumbBuffer);
+            })
+            .then(thumbData => {
+                resultData.thumbData = thumbData;
+
+                return fsHelper.fsUnlink(file.path);
+                
+            })
+            .then(() => resolve(resultData))
+            .catch(error => reject(error));
     });
 }
 
-function UploadToUserFolder(userId, file, folderName) {
-        const s3 = ConfigureS3();
-        const uriFileName = encodeURIComponent(`${file.filename}_${file.originalname}`);
-        // const uriFileName = encodeURIComponent(file.originalname);
-        const uriUserId = encodeURIComponent(userId);
-        let fileKey = folderName === undefined ? uriUserId : uriUserId + '/' + folderName;
-        fileKey += '/' + uriFileName;
-        const filedata = fs.createReadStream(file.path);
-    
-        var params = {
-            Key: fileKey,
-            Body: filedata,
-            Bucket: config.aws.s3BucketName,
-            ACL: 'public-read'
-        };
-    
-        return s3.upload(params).promise();
-}
-
-function uploadImageFile(req) {
-    return new Promise((resolve, reject) => {
-        if (!req.file) resolve(undefined);
-
-        SetupUserFolder(req.identity.id).then((data) => {
-            UploadToUserFolder(req.identity.id, req.file, 'photos').then((fileData) => {
-                fsHelper.fsUnlink(req.file.path).then(() => {
-                    resolve(fileData);
-                }).catch((err) => reject(err));
-            }).catch((err) => reject(err));
-        }).catch((err) => reject(err));
-    });
+function resizeImage(size, file) {
+    return sharp(file.path)
+            .resize({ height: size })
+            .toBuffer();
 }
 
 function deleteImagesFromUserFolder(imageRecords) {
@@ -94,6 +85,7 @@ function deleteImagesFromUserFolder(imageRecords) {
         console.log(util.inspect(imageRecords, { colors: true }));
 
         //TODO: Include some validation so that all keys must include the userid
+        //TODO: Delete MedRez and Thumbnails if they exist
         var keyList = imageRecords.map(image => { return {Key: image.key} });
         
         const s3 = ConfigureS3();
@@ -123,4 +115,9 @@ function listUserFolderContents(userId) {
         return s3.listObjectsV2(params).promise();
 }
 
-export default { ConfigureS3, SetupUserFolderAsync, SetupUserFolder, UploadToUserFolder, uploadImageFile, deleteImagesFromUserFolder, listUserFolderContents };
+export default { 
+    ConfigureS3, 
+    uploadImagesResized,
+    deleteImagesFromUserFolder, 
+    listUserFolderContents
+};

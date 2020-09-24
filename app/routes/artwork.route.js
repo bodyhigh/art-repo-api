@@ -4,10 +4,15 @@ import { LoadAndValidateOwnership } from '../middleware/artwork.middleware';
 import { checkMaxFileSize } from '../middleware/file.middleware';
 import artworkController from '../controllers/artwork.controller';
 
-const multer = require('multer');
-var upload = multer({ dest: './tmp/'});
 const { check, body } = require('express-validator/check');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({ 
+    dest: './tmp/',
+    limits: {
+        fileSize: 1024 * 5000 // 5MB
+    }
+});
 
 router.route('/')
     .post(upload.single('imageFile'), [
@@ -16,9 +21,10 @@ router.route('/')
             .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
             .trim(),
         body('description')
+            .optional({ nullable: true, checkFalsy: true})
             .isLength({ min: 3 }).withMessage('must be at least 3 chars long')
             .trim()
-    ], reqResultsHandler, checkMaxFileSize, artworkController.post)
+    ], reqResultsHandler, artworkController.post)
 
     .get(artworkController.listByArtistId);
 

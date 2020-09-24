@@ -12,6 +12,7 @@ import { hasinstanceOf } from '../app/helpers/typeHelper';
 import util from 'util';
 
 import routes from './../app/routes/';
+import multer from 'multer';
 
 const app = express();
 
@@ -57,6 +58,8 @@ app.use((err, req, res, next) => {
 		res.status(401).send('invalid token');
 	} else if (err.code === 'permission_denied') {
 		res.status(401).send('permission denied');
+	} else if (err instanceof multer.MulterError) {
+		return next(new APIError(err.message, err.status, true));
 	} else if (!hasinstanceOf(err, APIError)) {
 		return next(new APIError(err.message, err.status, err.isPublic));
 	}
