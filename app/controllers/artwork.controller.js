@@ -38,9 +38,12 @@ function post(req, res, next) {
     awsS3Helper.uploadImagesResized(req.identity.id, file)
         .then(data => {
             if (data) {
-                console.log(util.inspect(data, { colors: true}));
-                //TODO: Update schema to hold medRez and thumbnails
-                artworkRecord.images = [{ url: data.hiRezData.Location, key: data.hiRezData.Key, isPrimary: true }];                
+                // console.log(util.inspect(data, { colors: true}));
+                artworkRecord.images = [{ 
+                    hiRez: { url: data.hiRezData.Location, key: data.hiRezData.Key },
+                    medRez: { url: data.medRezData.Location, key: data.medRezData.Key },
+                    thumbnail: { url: data.thumbData.Location, key: data.thumbData.Key },
+                    isPrimary: true }];
             }
 
             artworkRecord = escape(artworkRecord);        

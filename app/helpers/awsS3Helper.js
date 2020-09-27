@@ -61,12 +61,12 @@ function uploadImagesResized(userId, file) {
             })
             .then(thumbData => {
                 resultData.thumbData = thumbData;
-
-                return fsHelper.fsUnlink(file.path);
-                
+                return fsHelper.fsUnlink(file.path);                
             })
             .then(() => resolve(resultData))
-            .catch(error => reject(error));
+            .catch(error => {
+                fsHelper.fsUnlink(file.path).then(() => reject(error));
+            });
     });
 }
 
@@ -78,15 +78,21 @@ function resizeImage(size, file) {
 
 function deleteImagesFromUserFolder(imageRecords) {
     return new Promise((resolve, reject) => {
-        console.log(imageRecords.length);
-
         if (imageRecords.length === 0) return resolve();
 
-        console.log(util.inspect(imageRecords, { colors: true }));
-
         //TODO: Include some validation so that all keys must include the userid
-        //TODO: Delete MedRez and Thumbnails if they exist
-        var keyList = imageRecords.map(image => { return {Key: image.key} });
+        var keyList = imageRecords.map(image => { 
+            var imageKeys = [{ Key: image.hiRez.key }];
+
+            if (image.medRez && image.medRez.key)
+                imageKeys.push({ Key: image.medRez.key });
+
+            if (image.thumbnail && image.thumbnail.key)
+                imageKeys.push({ Key: image.thumbnail.key });
+
+            return imageKeys;
+
+        }).flat();        
         
         const s3 = ConfigureS3();
         var params = {
@@ -99,7 +105,7 @@ function deleteImagesFromUserFolder(imageRecords) {
         s3.deleteObjects(params, function(err, data) {
             if (err) return reject(err);
             return resolve(data);
-        })
+        });
     });
 }
 

@@ -7,7 +7,7 @@ import util from 'util';
 const ArtworkImageSchema = new mongoose.Schema({
     url: { type: String, required: true },
     key: { type: String, required: true },
-    isPrimary: Boolean
+    // isPrimary: Boolean
 });
 
 const ArtworkSchema = new mongoose.Schema({
@@ -17,8 +17,14 @@ const ArtworkSchema = new mongoose.Schema({
     dateCompleted: { type: Date },
     inventoryNumber: { type: String },
     medium: { type: String },
-    status: { type: String },
-	images: { type: [ArtworkImageSchema]},
+	status: { type: String },
+	images: { type: [{
+		hiRez: ArtworkImageSchema,
+		medRez: ArtworkImageSchema,
+		thumbnail: ArtworkImageSchema,
+		isPrimary: Boolean
+	}]},
+	// images: { type: [ArtworkImageSchema]},
 	dimension: {
         height: { type: Number, required: false },
         width: { type: Number, required: false },
