@@ -30,7 +30,13 @@ function post(req, res, next) {
         artistId: req.identity.id,
         createDate: Date.now(),
         dateCompleted: req.body.dateCompleted,
-        medium: req.body.medium
+        medium: req.body.medium,
+        dimension: {
+            height: req.body.height,
+            width: req.body.width,
+            depth: req.body.depth,
+            unit: req.body.unit
+        }
     });
 
     const file = req.file;

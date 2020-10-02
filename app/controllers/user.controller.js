@@ -91,7 +91,6 @@ function myProfile(req, res, next) {
 
 function getuserFileOverview(req, res, next) {
 	const userId = req.params.id;
-	console.log(userId);
 	awsS3Helper.listUserFolderContents(userId).then(folderContent => {
 		res.json(folderContent);
 	}).catch(e => next(e));
