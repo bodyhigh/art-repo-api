@@ -25,7 +25,6 @@ const ArtworkSchema = new mongoose.Schema({
 		thumbnail: ArtworkImageSchema,
 		isPrimary: Boolean
 	}]},
-	// images: { type: [ArtworkImageSchema]},
 	dimension: {
         height: { type: Number, required: false },
         width: { type: Number, required: false },

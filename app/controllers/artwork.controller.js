@@ -41,6 +41,7 @@ function post(req, res, next) {
     });
 
     const file = req.file;
+    let savedArtworkRecord = {};
 
     awsS3Helper.uploadImagesResized(req.identity.id, file)
         .then(data => {
