@@ -50,7 +50,7 @@ ArtworkSchema.statics = {
 	},
 
 	listByArtistId({ itemsPerPage = 25, pageNumber = 0, sort = { createDate: -1 }, searchTermQuery = {} } = {}) {
-		// console.log(util.inspect(searchTermQuery, { colors: true }));
+		console.log(util.inspect(searchTermQuery, { colors: true }));
 		return this.find(searchTermQuery)
             .collation({ locale: "en" })
 			.sort(sort)

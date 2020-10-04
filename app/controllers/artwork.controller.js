@@ -31,7 +31,6 @@ function post(req, res, next) {
         createDate: Date.now(),
         dateCompleted: req.body.dateCompleted,
         medium: req.body.medium,
-        labels: req.body.labels.split(','),
         dimension: {
             height: req.body.height,
             width: req.body.width,
@@ -39,6 +38,15 @@ function post(req, res, next) {
             unit: req.body.unit
         }
     });
+
+    const labels = req.body.labels.split(',').reduce((filtered, label) => {
+        if (label.trim().length > 0) filtered.push(label.trim());
+        return filtered;
+    }, []);
+    
+    if (labels.length > 0) {
+        artworkRecord.labels = labels;
+    }
 
     const file = req.file;
     let savedArtworkRecord = {};
@@ -79,11 +87,14 @@ function listByArtistId(req, res, next) {
 
 	let searchTermQuery = {};
 	if (searchTerm) {
-		searchTermQuery = { $or: ["title", "description"].map(field => {
+		searchTermQuery = { $or: ["title", "description", "labels"].map(field => {
 			const item = {};
 			item[field] = { $regex : new RegExp(searchTerm, "i")};
 			return item;
-		})};
+        })};
+        
+        // const labelQuery = { $or: { labels: { $in: [searchTerm] }}};
+
     }
 
     searchTermQuery.artistId = req.identity.id;
