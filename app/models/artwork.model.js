@@ -18,6 +18,7 @@ const ArtworkSchema = new mongoose.Schema({
     inventoryNumber: { type: String },
     medium: { type: String },
 	status: { type: String },
+	labels: { type: [String]},
 	images: { type: [{
 		hiRez: ArtworkImageSchema,
 		medRez: ArtworkImageSchema,

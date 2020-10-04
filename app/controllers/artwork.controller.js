@@ -31,6 +31,7 @@ function post(req, res, next) {
         createDate: Date.now(),
         dateCompleted: req.body.dateCompleted,
         medium: req.body.medium,
+        labels: req.body.labels.split(','),
         dimension: {
             height: req.body.height,
             width: req.body.width,
