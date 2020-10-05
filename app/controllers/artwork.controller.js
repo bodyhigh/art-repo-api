@@ -39,14 +39,7 @@ function post(req, res, next) {
         }
     });
 
-    const labels = req.body.labels.split(',').reduce((filtered, label) => {
-        if (label.trim().length > 0) filtered.push(label.trim());
-        return filtered;
-    }, []);
-    
-    if (labels.length > 0) {
-        artworkRecord.labels = labels;
-    }
+    artworkRecord.labels = controllerHelper.commaDelimitedToTrimArray(req.body.labels);
 
     const file = req.file;
     let savedArtworkRecord = {};
@@ -77,6 +70,24 @@ function post(req, res, next) {
                     }
                 }); 
         }).catch((err) => next(new APIError(err)));
+}
+
+function patch(req, res, next) {
+    Artwork.findById(req.params.id)
+        .then((originalRecord) => {
+            controllerHelper.validateEntityArtistIdOwnership(originalRecord, req);
+
+            // Some manual manipulation here
+            req.body.labels = controllerHelper.commaDelimitedToTrimArray(req.body.labels);
+
+            originalRecord = escape(controllerHelper.patchMapping(originalRecord, req));
+            //Hack to map sub-objects
+            originalRecord.dimension = escape(controllerHelper.patchMapping(originalRecord.dimension, req));
+            originalRecord.save()
+                .then((updatedRecord) => {
+                    res.json(unescape(updatedRecord));
+                });//.catch((e) => next(e));
+        }).catch(e => next(e));
 }
 
 function listByArtistId(req, res, next) {
@@ -123,18 +134,6 @@ function findById(req, res, next) {
             res.json(unescape(result));
         })
         .catch((e) => next(e));
-}
-
-function patch(req, res, next) {
-    Artwork.findById(req.params.id)
-        .then((originalRecord) => {
-            controllerHelper.validateEntityArtistIdOwnership(originalRecord, req);
-            originalRecord = escape(controllerHelper.patchMapping(originalRecord, req));
-            originalRecord.save()
-                .then((updatedRecord) => {
-                    res.json(unescape(updatedRecord));
-                });//.catch((e) => next(e));
-        }).catch(e => next(e));
 }
 
 function deleteRecord(req, res, next) {
