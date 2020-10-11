@@ -1,5 +1,4 @@
 import { sampleAddresses } from './address.sample';
-import { sampleArtworkCoveredRef } from './artwork.sample';
 import { sampleClientBasicRefs } from './client.sample';
 import mongoose from 'mongoose';
 
@@ -13,4 +12,4 @@ export const sampleBasicUser = {
     accountStatus: 'active'
 };
 
-export const sampleFullUser = {...sampleBasicUser, ...sampleAddresses, ...sampleArtworkCoveredRef, ...sampleClientBasicRefs };
+export const sampleFullUser = {...sampleBasicUser, ...sampleAddresses, ...sampleClientBasicRefs };

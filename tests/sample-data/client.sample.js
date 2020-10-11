@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { sampleAddresses } from './address.sample';
-import { sampleArtworkCoveredRef } from './artwork.sample';
 
 export const sampleBasicClient = {
     firstName: 'Bob',
@@ -30,10 +29,9 @@ export const sampleClientBasicRef = {
 };
 
 export const sampleClientAddress = sampleAddresses;
-export const sampleClientArtwork = sampleArtworkCoveredRef;
-export const sampleFullClient = {...sampleBasicClient, ...sampleClientAddress, ...sampleClientArtwork};
+export const sampleFullClient = {...sampleBasicClient, ...sampleClientAddress};
 export const sampleFullClientList = [
-    { ...{ firstName: 'Copernicus', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress, ...sampleClientArtwork },
-    { ...{ firstName: 'Tycho', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress, ...sampleClientArtwork },
-    { ...{ firstName: 'Kepler', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress, ...sampleClientArtwork }
+    { ...{ firstName: 'Copernicus', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress },
+    { ...{ firstName: 'Tycho', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress },
+    { ...{ firstName: 'Kepler', lastName: 'Dobbs', artistId: mongoose.Types.ObjectId() },  ...sampleClientAddress }
 ];

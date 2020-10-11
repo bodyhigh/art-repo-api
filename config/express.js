@@ -48,7 +48,8 @@ app.use('/api', routes);
 // ERROR HANDLING
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {	
-	if (err) {
+	if (config.env === 'development' && err) {
+	// if (err) {
 		console.log('########## ERROR HANDLING ##########')
 		console.log(util.inspect(err, { colors: true }));
 	}

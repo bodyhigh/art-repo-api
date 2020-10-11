@@ -138,6 +138,8 @@ function unescapeEntityArray(entities, sanitizeFields) {
  * @param {string} stringField 
  */
 function commaDelimitedToTrimArray(stringField) {
+    if (!stringField) return undefined;
+    
     const stringArray = stringField.split(',').reduce((filtered, stringItem) => {
         if (stringItem.trim().length > 0) filtered.push(stringItem.trim());
         return filtered;

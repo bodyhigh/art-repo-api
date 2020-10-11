@@ -9,7 +9,6 @@ import Artwork from '../../app/models/artwork.model';
 import { sampleFullUser } from '../sample-data/user.sample';
 import { sampleArtwork } from '../sample-data/artwork.sample';
 import util, { log } from 'util';
-import { Mongoose } from 'mongoose';
 
 var token;
 var seededUser;
@@ -53,7 +52,8 @@ describe('## ROUTE/ARTWORK ##', function() {
 
             request(app)
                 .post('/api/artwork')
-                .send(newArtwork)
+                .field('title', 'Fail City')
+                .field('description', 'Fail City')
                 .expect(httpStatus.UNAUTHORIZED)
                 .then((res) => {
                     expect(res.body.errors[0].errorCode).to.be.equal('CREDENTIALS_REQUIRED');
@@ -68,7 +68,6 @@ describe('## ROUTE/ARTWORK ##', function() {
             request(app)
                 .post('/api/artwork')
                 .set('Authorization', `bearer ${token}`)
-                .send(newArtwork)
                 .expect(httpStatus.BAD_REQUEST)
                 .then((res) => {
                     expect(res.body.errors[0].errorCode).to.be.equal('INVALID_REQUEST_PARAMETERS');
@@ -87,14 +86,20 @@ describe('## ROUTE/ARTWORK ##', function() {
             request(app)
                 .post('/api/artwork')
                 .set('Authorization', `bearer ${token}`)
-                .send(newArtwork)
+                .field('title', newArtwork.title)
+                .field('description', newArtwork.description)
                 .expect(httpStatus.OK)
                 .then((res) => {
+                    console.log(util.inspect(res.body.error, { color: true}));
                     expect(res.body.title).to.be.equal(newArtwork.title);
                     expect(res.body.description).to.be.equal(newArtwork.description);
                     done();
                 })
-                .catch(done);
+                .catch(err => {
+                    console.log(util.inspect(err, { colors: true}));
+                    done(err);
+                });
+                // .catch(done);
         });
     });
 
@@ -189,15 +194,16 @@ describe('## ROUTE/ARTWORK ##', function() {
         it('Should successfully update a record', (done) => {
             const updatedRecord = seededArtwork[0];
             updatedRecord.title = 'Updated Title';
-            updatedRecord.description = 'Updated Description. <script>alert("GOTCHA");</script>';
+            updatedRecord.description = 'Updated Description.';
 
             request(app)
                 .patch(`/api/artwork/${seededArtwork[0].id}`)
                 .set('Authorization', `bearer ${token}`)
-                .send(updatedRecord)
+                .field('_id', updatedRecord.id)
+                .field('title', updatedRecord.title)
+                .field('description', updatedRecord.description)
                 .expect(httpStatus.OK)   
                 .then((res) => {
-                    // console.log(util.inspect(res.body, { colors: true}));
                     expect(res.body._id).to.be.equal(updatedRecord.id);
                     expect(res.body.title).to.be.equal(updatedRecord.title);
                     expect(res.body.description).to.be.equal(updatedRecord.description);
