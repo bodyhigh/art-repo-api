@@ -68,8 +68,8 @@ describe('## MODEL/USER ##', function()  {
         });
 
         it('[clients] - Should fail if Client record is invalid', function(done)  {
-            const badCients = { clients: [{ field1: 'foo' }], clientRefs: [{ field1: 'Foo' }] };
-            const newUser = new User({...sampleBasicUser, ...badCients });
+            const badClients = { clients: [{ field1: 'foo' }], clientRefs: [{ field1: 'Foo' }] };
+            const newUser = new User({...sampleBasicUser, ...badClients });
 
             newUser.validate((err) => {
                 // clients
@@ -78,7 +78,7 @@ describe('## MODEL/USER ##', function()  {
                 expect(err.errors['clients.0.lastName'].kind).to.be.equal('required');
 
                 // clientRefs
-                expect(err.errors.clientRefs.name).to.be.equal('CastError');
+                expect(err.errors['clientRefs.0'].kind).to.be.equal('[ObjectId]');
 
                 // // # of errors
                 // console.log(util.inspect(err.errors, { colors: true }));

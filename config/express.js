@@ -48,10 +48,10 @@ app.use('/api', routes);
 // ERROR HANDLING
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {	
-	if (err) {
-		console.log('########## ERROR HANDLING ##########')
-		console.log(util.inspect(err, { colors: true }));
-	}
+	// if (err) {
+	// 	console.log('########## ERROR HANDLING ##########')
+	// 	console.log(util.inspect(err, { colors: true }));
+	// }
 
 	if (err.name === 'UnauthorizedError') {
 		// or use: code === 'credentials_required'
