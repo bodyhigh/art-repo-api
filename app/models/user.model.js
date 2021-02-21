@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
 import Address from './address.model';
 import ClientBasicRef from './clientRefs.model';
-import ArtworkBasicRef  from './artworkRefs.model';
+// import ArtworkBasicRef  from './artworkRefs.model';
 import util from 'util';
 
 const UserSchema = new mongoose.Schema({
@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
     roles: [{ type: String, required: true, enum: ['admin', 'user'] }],
     clients: { type: [ClientBasicRef.schema] },
     clientRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Client' }],
-    artwork: { type: [ArtworkBasicRef.schema] },
+    // artwork: { type: [ArtworkBasicRef.schema] },
     addresses: { type: [Address.schema] },
     accountStatus: { type: String, required: true, enum: ['active', 'disabled', 'registered'] },
     createDate: { type: Date, default: Date.now },

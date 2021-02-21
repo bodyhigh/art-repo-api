@@ -4,7 +4,6 @@ import Client from '../../app/models/client.model';
 import { expect } from 'chai';
 import { sampleBasicUser, sampleFullUser } from '../sample-data/user.sample';
 import { sampleClientBasicRef, sampleFullClient, sampleFullClientList } from '../sample-data/client.sample'
-import { sampleArtworkCoveredRef } from '../sample-data/artwork.sample';
 import util from 'util';
 
 describe('## MODEL/USER ##', function()  {
@@ -94,27 +93,8 @@ describe('## MODEL/USER ##', function()  {
             newUser.validate(done);
         });
 
-        it('[artwork] - Should fail if Artwork record is invalid', function(done)  {
-            const badArtwork = { artwork: [{ field1: 'Bar' }], artworkRefs: [{ field1: 'Foo' }]};
-            const newUser = new User({ ...sampleBasicUser, ...badArtwork });
-
-            newUser.validate((err) => {
-                // artwork
-                expect(err.errors['artwork.0.artworkId'].kind).to.be.equal('required');
-                expect(err.errors['artwork.0.title'].kind).to.be.equal('required');
-                expect(err.errors['artwork.0.description'].kind).to.be.equal('required');
-
-                // artworkRefs
-                // expect(err.errors.artworkRefs.name).to.be.equal('CastError');
-
-                // # of errors
-                expect(Object.keys(err.errors).length).to.be.equal(3);
-                done();
-            });            
-        });
-
         it('[roles] - Should fail validation of a invalid role exists', function(done)  {
-            const newUser = new User({...sampleBasicUser, ...sampleArtworkCoveredRef});
+            const newUser = new User({...sampleBasicUser});
             newUser.roles = ['admin', 'boogeyman'];
 
             newUser.validate((err) => {
@@ -124,7 +104,7 @@ describe('## MODEL/USER ##', function()  {
         });
 
         it('[artwork] - Should pass when provided a valid records', function(done)  {
-            const newUser = new User({...sampleBasicUser, ...sampleArtworkCoveredRef});
+            const newUser = new User({...sampleBasicUser});
 
             newUser.validate(done);
         });
@@ -143,7 +123,6 @@ describe('## MODEL/USER ##', function()  {
                             expect(savedUser.firstName).to.be.equal(sampleFullUser.firstName);
                             expect(savedUser.lastName).to.be.equal(sampleFullUser.lastName);
                             expect(savedUser.addresses).to.be.an('array').to.have.lengthOf(2);
-                            expect(savedUser.artwork).to.be.an('array').to.have.lengthOf(4);
                             expect(savedUser.clients).to.be.an('array').to.have.lengthOf(2);
                             expect(savedUser.clientRefs).to.be.an('array').to.have.lengthOf(3);
                             done();

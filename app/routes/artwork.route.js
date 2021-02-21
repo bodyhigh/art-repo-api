@@ -3,6 +3,7 @@ import { reqResultsHandler } from '../middleware/requestValidation.middleware';
 import { LoadAndValidateOwnership } from '../middleware/artwork.middleware';
 import { checkMaxFileSize } from '../middleware/file.middleware';
 import artworkController from '../controllers/artwork.controller';
+import util from 'util';
 
 const { check, body } = require('express-validator/check');
 const router = express.Router();
@@ -31,7 +32,7 @@ router.route('/')
 router.route('/:id')
     .get(artworkController.findById)
     .delete(LoadAndValidateOwnership, artworkController.deleteRecord)
-    .patch([
+    .patch(upload.single('imageFile'), [
         body('title')
             .not().isEmpty()
             .isLength({ min: 3 }).withMessage('must be at least 3 chars long')

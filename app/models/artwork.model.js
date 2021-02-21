@@ -18,13 +18,13 @@ const ArtworkSchema = new mongoose.Schema({
     inventoryNumber: { type: String },
     medium: { type: String },
 	status: { type: String },
+	labels: { type: [String]},
 	images: { type: [{
 		hiRez: ArtworkImageSchema,
 		medRez: ArtworkImageSchema,
 		thumbnail: ArtworkImageSchema,
 		isPrimary: Boolean
 	}]},
-	// images: { type: [ArtworkImageSchema]},
 	dimension: {
         height: { type: Number, required: false },
         width: { type: Number, required: false },

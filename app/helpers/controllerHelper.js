@@ -133,6 +133,21 @@ function unescapeEntityArray(entities, sanitizeFields) {
     }
 }
 
+/**
+ * Will convert a comma delimited string into a string array, if empty will return 'undefined'
+ * @param {string} stringField 
+ */
+function commaDelimitedToTrimArray(stringField) {
+    if (!stringField) return undefined;
+    
+    const stringArray = stringField.split(',').reduce((filtered, stringItem) => {
+        if (stringItem.trim().length > 0) filtered.push(stringItem.trim());
+        return filtered;
+    }, []);
+
+    return stringArray.length > 0 ? stringArray : undefined;
+}
+
 export default {
     artworkSanitizeFields,
     validateEntityArtistIdOwnership,
@@ -140,5 +155,6 @@ export default {
     // escapeJsonEntity,
     escapeEntity,
     unescapeEntity,
-    unescapeEntityArray
+    unescapeEntityArray,
+    commaDelimitedToTrimArray
 };
